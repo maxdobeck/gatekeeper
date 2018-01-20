@@ -14,7 +14,10 @@ var (
 
 // ValidSession checks if the session is authenticated and still active
 func ValidSession(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "scheduler-session")
+	session, err := store.Get(r, "scheduler-session")
+	if err != nil {
+		panic(err)
+	}
 	
 	// Check if user is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
@@ -28,13 +31,12 @@ func ValidSession(w http.ResponseWriter, r *http.Request) {
 
 // Login gets a new session for the user if the credential check passes
 func Login(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "scheduler-session")
-
+	session, err := store.Get(r, "scheduler-session")
+	if err != nil {
+		panic(err)
+	}
 	// Authenticate based on incoming http request
-	/*
-	*
-	*
-	*/
+	checkPassword(r)
 
 	// Set user as authenticated
 	session.Values["authenticated"] = true
@@ -43,7 +45,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // Logout destroys the session
 func Logout(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "scheduler-session")
+	session, err := store.Get(r, "scheduler-session")
+	if err != nil {
+		panic(err)
+	}
 
 	// Revoke users authentication
 	session.Values["authenticated"] = false
