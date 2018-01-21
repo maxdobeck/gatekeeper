@@ -41,12 +41,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// Respond with the proper content type and the userId
+	// Assume passwords matched, add a function to get the memberID based ont the email
+	fmt.Println(getMemberID("Jack_Reinger@yahoo.com"))
+	
+	// Respond with the proper content type and the memberID
 	w.Header().Set("Content-Type", "text/plain") // TODO convert this to application/json
 	w.WriteHeader(http.StatusOK)
-	body := "Success at exporting a var!"
-	fmt.Fprintf(w, body)
-	// Set user as authenticated
+	memberID := "1234"
+	fmt.Fprintf(w, memberID)
+	// w.Write() // Alternative to fprintf.  Needs []byte of marshalled JSON
+	
+	// Set cookie values and save
 	session.Values["authenticated"] = true
 	session.Save(r, w)
 }
