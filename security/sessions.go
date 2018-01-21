@@ -36,8 +36,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// Authenticate based on incoming http request
-	checkPassword(r)
-
+	if passwordsMatch(r) != true {
+		http.Error(w, "Incorrect username or password", http.StatusUnauthorized)
+		return
+	}
 	// Set user as authenticated
 	session.Values["authenticated"] = true
 	session.Save(r, w)

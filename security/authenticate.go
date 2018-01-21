@@ -14,18 +14,27 @@ type Credentials struct {
 	Email, Password string
 }
 
-func checkPassword(r *http.Request) {
+func passwordsMatch(r *http.Request) (match bool) {
 	var c Credentials
 	err := json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		fmt.Println("Error decoding credentials >>", err)
 	}
 	fmt.Println(c.Email, c.Password)
-	password, userPresent := getCurPassword(c.Email)
+	truePassword, userPresent := getCurPassword(c.Email)
 	if userPresent != true {
 		fmt.Println("User is not in the database")
+		match = false
+		return
 	}
-	fmt.Println("User's password is: ", password)
+	if truePassword != c.Password {
+		match = false
+		fmt.Println("The passwords do not match")
+		return
+	}
+	match = true
+	fmt.Println("The passwords match", c.Password, truePassword)
+	return
 }
 
 func getCurPassword(email string) (password string, userPresent bool) {
