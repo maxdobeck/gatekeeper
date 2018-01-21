@@ -25,7 +25,7 @@ func checkPassword(r *http.Request) {
 	if userPresent != true {
 		fmt.Println("User is not in the database")
 	}
-	fmt.Println(password)
+	fmt.Println("User's password is: ", password)
 }
 
 func getCurPassword(email string) (password string, userPresent bool) {
@@ -39,6 +39,9 @@ func getCurPassword(email string) (password string, userPresent bool) {
 		userPresent = false
 		password = ""
 		return
+	}
+	if sqlErr != nil {
+		fmt.Println(sqlErr)
 	}
 	userPresent = true
 	return
