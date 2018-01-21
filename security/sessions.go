@@ -40,6 +40,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Incorrect username or password", http.StatusUnauthorized)
 		return
 	}
+	
+	// Respond with the proper content type and the userId
+	w.Header().Set("Content-Type", "text/plain") // TODO convert this to application/json
+	w.WriteHeader(http.StatusOK)
+	body := "Success at exporting a var!"
+	fmt.Fprintf(w, body)
 	// Set user as authenticated
 	session.Values["authenticated"] = true
 	session.Save(r, w)
