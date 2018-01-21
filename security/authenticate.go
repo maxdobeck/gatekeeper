@@ -28,7 +28,7 @@ func checkPassword(r *http.Request) {
 	fmt.Println(password)
 }
 
-func getCurPassword(email string) (password string, userPresent bool){
+func getCurPassword(email string) (password string, userPresent bool) {
 	connStr := os.Getenv("PGURL")
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -41,6 +41,5 @@ func getCurPassword(email string) (password string, userPresent bool){
 		return
 	}
 	userPresent = true
-	fmt.Printf("%s\n", password)
 	return
 }
