@@ -2,11 +2,10 @@ package gatekeeper
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
-	"log"
 	"github.com/antonlindstrom/pgstore"
+	"log"
 	"net/http"
+	"os"
 )
 
 type memberDetails struct {
@@ -15,41 +14,47 @@ type memberDetails struct {
 
 var (
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
-	key   = []byte("super-secret-key")
+	key = []byte("super-secret-key")
 	// store = sessions.NewCookieStore(key)
 )
+
+func check(err error) {
+	if err != nil {
+		log.Println(err)
+	}
+}
 
 // ValidSession checks if the session is authenticated and still active
 func ValidSession(w http.ResponseWriter, r *http.Request) {
 	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	check(err)
 	defer store.Close()
+
 	session, err := store.Get(r, "scheduler-session")
-	if err != nil {
-		panic(err)
-	}
+	check(err)
+
 	// Check if user is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-		http.Error(w, "Is this session valid: false", http.StatusUnauthorized)
+		http.Error(w, "Invalid Session", http.StatusUnauthorized)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(auth)
 		return
 	}
-	fmt.Fprintln(w, "Is this session valid: true")
+
+	// Respond with the proper content type and the memberID
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("true")
+	log.Println(w, "Is this session valid: true")
 }
 
 // Login gets a new session for the user if the credential check passes
 func Login(w http.ResponseWriter, r *http.Request) {
 	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	check(err)
 	defer store.Close()
 	session, err := store.Get(r, "scheduler-session")
-	if err != nil {
-		fmt.Println(err)
-	}
-
+	check(err)
+	// Limit the sessions to 3 24-hour days
 	session.Options.MaxAge = 86400 * 3
 
 	creds := DecodeCredentials(r)
@@ -60,12 +65,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	// Get the memberID based on the supplied email
 	memberID := getMemberID(creds.Email)
-	m := memberDetails {
+	m := memberDetails{
 		ID: memberID,
 	}
 
 	// Respond with the proper content type and the memberID
-	w.Header().Set("Content-Type", "application/json") // TODO convert this to application/json
+	w.Header().Set("Content-Type", "application/json")
 	// Set cookie values and save
 	session.Values["authenticated"] = true
 	if err = session.Save(r, w); err != nil {
@@ -78,14 +83,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 // Logout destroys the session
 func Logout(w http.ResponseWriter, r *http.Request) {
 	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	check(err)
 	defer store.Close()
+
 	session, err := store.Get(r, "scheduler-session")
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	// Revoke users authentication
 	session.Values["authenticated"] = false
 	session.Save(r, w)
