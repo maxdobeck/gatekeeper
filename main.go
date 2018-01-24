@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/antonlindstrom/pgstore"
-	"github.com/maxdobeck/gatekeeper/authentications"
+	"github.com/maxdobeck/gatekeeper/authentication"
 	"log"
 	"net/http"
 	"os"

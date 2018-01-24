@@ -3,7 +3,9 @@ package gatekeeper
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/sessions"
+	"os"
+	"log"
+	"github.com/antonlindstrom/pgstore"
 	"net/http"
 )
 
@@ -14,11 +16,16 @@ type memberDetails struct {
 var (
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
 	key   = []byte("super-secret-key")
-	store = sessions.NewCookieStore(key)
+	// store = sessions.NewCookieStore(key)
 )
 
 // ValidSession checks if the session is authenticated and still active
 func ValidSession(w http.ResponseWriter, r *http.Request) {
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	defer store.Close()
 	session, err := store.Get(r, "scheduler-session")
 	if err != nil {
 		panic(err)
@@ -33,10 +40,18 @@ func ValidSession(w http.ResponseWriter, r *http.Request) {
 
 // Login gets a new session for the user if the credential check passes
 func Login(w http.ResponseWriter, r *http.Request) {
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	defer store.Close()
 	session, err := store.Get(r, "scheduler-session")
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	session.Options.MaxAge = 86400 * 3
+
 	creds := DecodeCredentials(r)
 	// Authenticate based on incoming http request
 	if passwordsMatch(r, creds) != true {
@@ -53,13 +68,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json") // TODO convert this to application/json
 	// Set cookie values and save
 	session.Values["authenticated"] = true
-	session.Save(r, w)
+	if err = session.Save(r, w); err != nil {
+		log.Printf("Error saving session: %v", err)
+	}
 	json.NewEncoder(w).Encode(m)
 	// w.Write([]byte(memberID)) // Alternative to fprintf
 }
 
 // Logout destroys the session
 func Logout(w http.ResponseWriter, r *http.Request) {
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	defer store.Close()
 	session, err := store.Get(r, "scheduler-session")
 	if err != nil {
 		panic(err)
