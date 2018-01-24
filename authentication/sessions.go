@@ -54,8 +54,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	defer store.Close()
 	session, err := store.Get(r, "scheduler-session")
 	check(err)
-	// Limit the sessions to 3 24-hour days
-	session.Options.MaxAge = 86400 * 3
+	// Limit the sessions to 1 24-hour day
+	session.Options.MaxAge = 86400 * 1
 
 	creds := DecodeCredentials(r)
 	// Authenticate based on incoming http request
@@ -90,5 +90,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	check(err)
 	// Revoke users authentication
 	session.Values["authenticated"] = false
+	session.Options.MaxAge = -1
 	session.Save(r, w)
 }
