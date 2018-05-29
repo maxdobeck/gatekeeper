@@ -32,3 +32,21 @@ func TestInvalidLogin(t *testing.T) {
 	fmt.Println(resp.Header.Get("Content-Type"))
 	fmt.Println(string(body))
 }
+
+// Test the Login command with a valid set of credentials
+func TestValidLogin(t *testing.T) {
+	bodyReader := strings.NewReader(`{"email": "test@gmail.com", "password": "supersecret"}`)
+
+	req, err := http.NewRequest("POST", "/login", bodyReader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := httptest.NewRecorder()
+	gatekeeper.Login(w, req)
+
+	resp := w.Result()
+
+	if resp.StatusCode == 401 {
+		t.Fail()
+	}
+}
