@@ -1,7 +1,7 @@
 /*
-* Restructure so that each Handler has its own file under /authentication 
+* Restructure so that each Handler has its own file under /authentication
 * 13-05-2018 MSD
-*/
+ */
 package gatekeeper
 
 import (
@@ -14,11 +14,11 @@ import (
 
 type memberDetails struct {
 	Status string
-	ID string
+	ID     string
 }
 
 type errorMessage struct {
-	Status string
+	Status  string
 	Message string
 }
 
@@ -70,8 +70,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	creds := DecodeCredentials(r)
 	// Authenticate based on incoming http request
 	if passwordsMatch(r, creds) != true {
+		log.Printf("Bad password for member: %v", creds.Email)
 		msg := errorMessage{
-			Status: "Failed to authenticate",
+			Status:  "Failed to authenticate",
 			Message: "Incorrect username or password",
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -84,7 +85,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	memberID := getMemberID(creds.Email)
 	m := memberDetails{
 		Status: "OK",
-		ID: memberID,
+		ID:     memberID,
 	}
 
 	// Respond with the proper content type and the memberID
