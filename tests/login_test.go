@@ -46,7 +46,7 @@ func TestValidLogin(t *testing.T) {
 
 	resp := w.Result()
 
-	if resp.StatusCode == 401 {
+	if resp.StatusCode != 200 {
 		t.Fail()
 	}
 }
