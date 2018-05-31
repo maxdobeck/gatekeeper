@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/antonlindstrom/pgstore"
+	"github.com/gorilla/context"
 	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/rs/cors"
 	"log"
@@ -27,8 +28,15 @@ func main() {
 	mux.HandleFunc("/login", gatekeeper.Login)
 	mux.HandleFunc("/logout", gatekeeper.Logout)
 
-	handler := cors.Default().Handler(mux)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://127.0.0.1:3030", "http://localhost:3030", "https://schedulingishard.com", "https://www.schedulingishard.com"},
+		AllowCredentials: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: false,
+	})
+
+	handler := c.Handler(mux)
 
 	fmt.Println("Listening on http://localhost:3000")
-	log.Fatal(http.ListenAndServe(":3000", handler))
+	log.Fatal(http.ListenAndServe(":3000", context.ClearHandler(handler)))
 }

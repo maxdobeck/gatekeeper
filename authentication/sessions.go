@@ -62,10 +62,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
 	check(err)
 	defer store.Close()
-	session, err := store.Get(r, "scheduler-session")
+	session, err := store.Get(r, "mydumb-session")
 	check(err)
 	// Limit the sessions to 1 24-hour day
 	session.Options.MaxAge = 86400 * 1
+	session.Options.Domain = "localhost" // Set to localhost for testing only.  prod must be set to "schedulingishard.com"
+	session.Options.HttpOnly = true
 
 	creds := DecodeCredentials(r)
 	// Authenticate based on incoming http request
