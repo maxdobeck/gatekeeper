@@ -1,10 +1,5 @@
 package gatekeeper
 
-/*
-* Restructure so that each Handler has its own file under /authentication
-* 13-05-2018 MSD
- */
-
 import (
 	"encoding/json"
 	"github.com/antonlindstrom/pgstore"
