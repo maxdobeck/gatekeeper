@@ -26,7 +26,7 @@ func main() {
 
 	CSRF := csrf.Protect([]byte("32-byte-long-auth-key"),
 		csrf.RequestHeader("X-CSRF-Token"),
-		csrf.FieldName("authenticity-token"),
+		csrf.FieldName("csrf_token"),
 		csrf.Secure(false), // Disabled for localhost non-https debugging
 	)
 
@@ -41,6 +41,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/validate", gatekeeper.ValidSession)
+	mux.HandleFunc("/csrftoken", gatekeeper.CsrfToken)
 	mux.HandleFunc("/login", gatekeeper.Login)
 	mux.HandleFunc("/logout", gatekeeper.Logout)
 

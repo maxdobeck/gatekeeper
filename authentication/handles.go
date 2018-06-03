@@ -2,7 +2,9 @@ package gatekeeper
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/antonlindstrom/pgstore"
+	"github.com/gorilla/csrf"
 	"log"
 	"net/http"
 	"os"
@@ -109,4 +111,11 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	session.Values["authenticated"] = false
 	session.Options.MaxAge = -1
 	session.Save(r, w)
+}
+
+// CsrfToken will generate a CSRF Token
+func CsrfToken(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("X-CSRF-Token", csrf.Token(r))
+	fmt.Fprintf(w, "Hello, world")
+	fmt.Println(csrf.Token(r))
 }
