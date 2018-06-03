@@ -23,4 +23,4 @@ before_install:
 
 script: 
   - go install
-  - go test ./tests/*
+  - go test ./...
