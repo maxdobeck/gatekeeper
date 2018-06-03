@@ -116,6 +116,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 // CsrfToken will generate a CSRF Token
 func CsrfToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-CSRF-Token", csrf.Token(r))
-	fmt.Fprintf(w, "Hello, world")
+	fmt.Fprintf(w, "Hello, token generator")
 	fmt.Println(csrf.Token(r))
 }
