@@ -33,8 +33,9 @@ func main() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://127.0.0.1:3030", "http://localhost:3030", "https://schedulingishard.com", "https://www.schedulingishard.com"},
 		AllowCredentials: true,
+		AllowedHeaders:   []string{"X-Csrf-Token"},
 		// Enable Debugging for testing, consider disabling in production
-		Debug: false,
+		Debug: true,
 	})
 
 	mux := http.NewServeMux()
