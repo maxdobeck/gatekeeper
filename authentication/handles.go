@@ -2,7 +2,6 @@ package gatekeeper
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/antonlindstrom/pgstore"
 	"github.com/gorilla/csrf"
 	"log"
