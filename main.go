@@ -24,16 +24,18 @@ func main() {
 	// Run a background goroutine to clean up expired sessions from the database.
 	defer store.StopCleanup(store.Cleanup(time.Minute * 5))
 
-	CSRF := csrf.Protect([]byte("32-byte-long-auth-key"),
+	CSRF := csrf.Protect(
+		[]byte("32-byte-long-auth-key"),
 		csrf.RequestHeader("X-CSRF-Token"),
-		csrf.FieldName("csrf_token"),
+		csrf.CookieName("csrf_cookie"),
 		csrf.Secure(false), // Disabled for localhost non-https debugging
 	)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://127.0.0.1:3030", "http://localhost:3030", "https://schedulingishard.com", "https://www.schedulingishard.com"},
 		AllowCredentials: true,
-		AllowedHeaders:   []string{"X-Csrf-Token"},
+		AllowedHeaders:   []string{"X-CSRF-Token"},
+		ExposedHeaders:   []string{"X-CSRF-Token"},
 		// Enable Debugging for testing, consider disabling in production
 		Debug: true,
 	})

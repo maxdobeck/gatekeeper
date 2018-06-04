@@ -60,7 +60,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
 	check(err)
 	defer store.Close()
-	session, err := store.Get(r, "mydumb-session")
+	session, err := store.Get(r, "scheduler-session")
 	check(err)
 	// Limit the sessions to 1 24-hour day
 	session.Options.MaxAge = 86400 * 1
@@ -116,6 +116,4 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 // CsrfToken will generate a CSRF Token
 func CsrfToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-CSRF-Token", csrf.Token(r))
-	fmt.Fprintf(w, "Hello, token generator")
-	fmt.Println(csrf.Token(r))
 }
