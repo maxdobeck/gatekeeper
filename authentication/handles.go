@@ -10,6 +10,7 @@ import (
 	"os"
 )
 
+// Remove Member Details and errorMessage to other packages
 type memberDetails struct {
 	Status string
 	ID     string
