@@ -42,10 +42,10 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/validate", gatekeeper.ValidSession)
-	mux.HandleFunc("/csrftoken", gatekeeper.CsrfToken)
-	mux.HandleFunc("/login", gatekeeper.Login)
-	mux.HandleFunc("/logout", gatekeeper.Logout)
+	mux.HandleFunc("/validate", authentication.ValidSession)
+	mux.HandleFunc("/csrftoken", authentication.CsrfToken)
+	mux.HandleFunc("/login", authentication.Login)
+	mux.HandleFunc("/logout", authentication.Logout)
 
 	n := negroni.Classic()
 	n.Use(c)

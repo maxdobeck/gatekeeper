@@ -1,4 +1,4 @@
-package gatekeeper
+package authentication
 
 import (
 	"fmt"

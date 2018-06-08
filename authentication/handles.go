@@ -1,4 +1,5 @@
-package gatekeeper
+//Package authentication challenges user credentials and creates or destroys cookie based sessions.
+package authentication
 
 import (
 	"encoding/json"
