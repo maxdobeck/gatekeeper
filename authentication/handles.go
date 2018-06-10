@@ -35,7 +35,7 @@ func check(err error) {
 
 // ValidSession checks if the session is authenticated and still active
 func ValidSession(w http.ResponseWriter, r *http.Request) {
-	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), key)
 	check(err)
 	defer store.Close()
 
@@ -58,7 +58,7 @@ func ValidSession(w http.ResponseWriter, r *http.Request) {
 
 // Login gets a new session for the user if the credential check passes
 func Login(w http.ResponseWriter, r *http.Request) {
-	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), key)
 	check(err)
 	defer store.Close()
 	session, err := store.Get(r, "scheduler-session")
@@ -102,7 +102,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // Logout destroys the session
 func Logout(w http.ResponseWriter, r *http.Request) {
-	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), key)
 	check(err)
 	defer store.Close()
 
