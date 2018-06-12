@@ -25,11 +25,13 @@ $ gatekeeper
 ```
 
 ## Dependencies
+```
 	github.com/antonlindstrom/pgstore
 	github.com/gorilla/context
 	github.com/gorilla/csrf
   github.com/rs/cors
 	github.com/urfave/negroni
+```
 
 ## Sources
 Started with handy helping from:
