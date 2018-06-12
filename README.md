@@ -21,7 +21,15 @@ $ gatekeeper
 /validate - Checks if the supplied session is active
 /login - Creates a session and returns an HTTP Only cookie
 /logout - Destroys the supplied session
+/csrfToken - Upon GET request from client will deliver CSRF token to be used in future requests
 ```
+
+## Dependencies
+	github.com/antonlindstrom/pgstore
+	github.com/gorilla/context
+	github.com/gorilla/csrf
+  github.com/rs/cors
+	github.com/urfave/negroni
 
 ## Sources
 Started with handy helping from:
