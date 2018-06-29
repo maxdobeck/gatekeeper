@@ -2,11 +2,17 @@ package authentication
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "github.com/lib/pq" // github.com/lib/pq
 	"net/http"
 	"os"
 )
+
+// Credentials are the user provided email and password
+type Credentials struct {
+	Email, Password string
+}
 
 func getCurPassword(email string) (password string, userPresent bool) {
 	connStr := os.Getenv("PGURL")
@@ -41,5 +47,14 @@ func passwordsMatch(r *http.Request, c Credentials) (match bool) {
 		return
 	}
 	match = true
+	return
+}
+
+// DecodeCredentials decodes the JSON data into a struct containing the email and password.DecodeCredentials
+func DecodeCredentials(r *http.Request) (c Credentials) {
+	err := json.NewDecoder(r.Body).Decode(&c)
+	if err != nil {
+		fmt.Println("Error decoding credentials >>", err)
+	}
 	return
 }

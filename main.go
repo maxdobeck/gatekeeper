@@ -1,11 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"github.com/antonlindstrom/pgstore"
 	"github.com/gorilla/context"
 	"github.com/gorilla/csrf"
+	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/authentication"
+	"github.com/maxdobeck/gatekeeper/members"
+	"github.com/maxdobeck/gatekeeper/models"
+	"github.com/maxdobeck/gatekeeper/sessions"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 	"log"
@@ -24,10 +27,13 @@ func main() {
 	// Run a background goroutine to clean up expired sessions from the database.
 	defer store.StopCleanup(store.Cleanup(time.Minute * 5))
 
+	connStr := os.Getenv("PGURL")
+	models.ConnToDB(connStr)
+
 	CSRF := csrf.Protect(
 		[]byte("32-byte-long-auth-key"),
 		csrf.RequestHeader("X-CSRF-Token"),
-		csrf.CookieName("csrf_cookie"),
+		csrf.CookieName("scheduler_csrf"),
 		csrf.Secure(false), // Disabled for localhost non-https debugging
 	)
 
@@ -40,17 +46,18 @@ func main() {
 		Debug: true,
 	})
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/validate", authentication.ValidSession)
-	mux.HandleFunc("/csrftoken", authentication.CsrfToken)
-	mux.HandleFunc("/login", authentication.Login)
-	mux.HandleFunc("/logout", authentication.Logout)
-
+	r := mux.NewRouter()
+	// Authentication Routes
+	r.HandleFunc("/csrftoken", sessions.CsrfToken).Methods("GET")
+	r.HandleFunc("/login", authentication.Login).Methods("POST")
+	r.HandleFunc("/logout", authentication.Logout).Methods("POST")
+	// Member CRUD routes
+	r.HandleFunc("/members", members.SignupMember).Methods("POST")
+	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
-	n.UseHandler(CSRF(mux))
+	n.UseHandler(CSRF(r))
 
-	fmt.Println("Listening on http://localhost:3000")
+	log.Println("Listening on http://localhost:3000")
 	log.Fatal(http.ListenAndServe(":3000", context.ClearHandler(n)))
 }

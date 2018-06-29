@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"github.com/antonlindstrom/pgstore"
 	"github.com/gorilla/csrf"
+	"github.com/maxdobeck/gatekeeper/members"
+	"github.com/maxdobeck/gatekeeper/sessions"
 	"log"
 	"net/http"
 	"os"
@@ -31,29 +33,6 @@ func check(err error) {
 	if err != nil {
 		log.Println(err)
 	}
-}
-
-// ValidSession checks if the session is authenticated and still active
-func ValidSession(w http.ResponseWriter, r *http.Request) {
-	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), key)
-	check(err)
-	defer store.Close()
-
-	session, err := store.Get(r, "scheduler-session")
-	check(err)
-
-	// Check if user is authenticated
-	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-		http.Error(w, "Invalid Session", http.StatusUnauthorized)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(auth)
-		return
-	}
-
-	// Respond with the proper content type and the memberID
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("true")
-	log.Println(w, "Is this session valid: true")
 }
 
 // Login gets a new session for the user if the credential check passes
@@ -83,7 +62,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Get the memberID based on the supplied email
-	memberID := getMemberID(creds.Email)
+	memberID := members.GetMemberID(creds.Email)
 	m := memberDetails{
 		Status: "OK",
 		ID:     memberID,
@@ -91,6 +70,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Respond with the proper content type and the memberID
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-CSRF-Token", csrf.Token(r))
 	// Set cookie values and save
 	session.Values["authenticated"] = true
 	if err = session.Save(r, w); err != nil {
@@ -102,6 +82,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // Logout destroys the session
 func Logout(w http.ResponseWriter, r *http.Request) {
+	if sessions.GoodSession(r) != true {
+		json.NewEncoder(w).Encode("Session Expired.  Log out and log back in.")
+	}
 	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), key)
 	check(err)
 	defer store.Close()
