@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/maxdobeck/gatekeeper.svg?branch=dev)](https://travis-ci.org/maxdobeck/gatekeeper)
 # Gatekeeper
-Service to authenticate users, create sessions, and validate sessions.
+Service to authenticate users, manage user sessions, and process business logic.
 
 ## Installing and Running
 ```
@@ -8,7 +8,7 @@ Service to authenticate users, create sessions, and validate sessions.
 $ go run main.go
 
 # Run all tests
-$ go test ./tests/*
+$ go test ./...
 
 # Compile and create executable
 This will place the executable under go/bin
@@ -16,11 +16,15 @@ $ go install
 
 # Run the executable
 $ gatekeeper
+```
 
-# Useful URLs
-/validate - Checks if the supplied session is active
-/login - Creates a session and returns an HTTP Only cookie
-/logout - Destroys the supplied session
+## Dependencies
+```
+	github.com/antonlindstrom/pgstore
+	github.com/gorilla/context
+	github.com/gorilla/csrf
+  github.com/rs/cors
+	github.com/urfave/negroni
 ```
 
 ## Sources
