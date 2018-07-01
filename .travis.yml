@@ -19,7 +19,6 @@ before_script:
 before_install:
   - psql -c 'create database scheduler;' -U postgres
   - psql -U postgres -d scheduler -f ./db/migrations/setup.sql
-  - psql -U postgres -d scheduler -f ./db/tests/populate_for_tests.sql
 
 script: 
   - go install
