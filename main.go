@@ -33,11 +33,7 @@ func main() {
 	CSRF := csrf.Protect(
 		[]byte("32-byte-long-auth-key"),
 		csrf.RequestHeader("X-CSRF-Token"),
-<<<<<<< HEAD
-		csrf.CookieName("session_csrf"),
-=======
 		csrf.CookieName("scheduler_csrf"),
->>>>>>> a01ce077ca74f2c9627ea66b12e6953935688271
 		csrf.Secure(false), // Disabled for localhost non-https debugging
 	)
 
