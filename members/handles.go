@@ -48,11 +48,6 @@ func SignupMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if memberValid == true {
-		hash, hashErr := hashPassword(m.Password)
-		if hashErr != nil {
-			log.Println("Error hashing password: ", hashErr)
-		}
-		m.Password, m.Password2 = hash, hash
 		msg := memberOutput{
 			Status: "Member Created",
 			Errors: signupErrs,

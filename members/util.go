@@ -3,7 +3,6 @@ package members
 import (
 	"database/sql"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
 )
@@ -70,9 +69,4 @@ func passwordsMatch(pw1 string, pw2 string) bool {
 		return true
 	}
 	return false
-}
-
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
 }
