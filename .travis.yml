@@ -21,6 +21,7 @@ jobs:
   - stage: deploy to heroku for dev test
     deploy:
       go: '1.9'
+      install: skip
       services: skip
       addons: skip
       before_script: skip
