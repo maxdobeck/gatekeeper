@@ -29,8 +29,7 @@ jobs:
   -stage: deploy to heroku test
   deploy:
     go: "1.9"
-  script: 
-  - go install
+  script: skip
   provider: heroku
   on: dev
   app:
