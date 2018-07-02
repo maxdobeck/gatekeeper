@@ -67,6 +67,12 @@ func main() {
 	n.Use(c)
 	n.UseHandler(CSRF(r))
 
-	log.Println("Listening on http://localhost:3000")
+	var hostURL string
+	if os.Getenv("GO_ENV") == "test" {
+		hostURL = "https://shielded-stream-75107.herokuapp.com/"
+	} else if os.Getenv("GO_ENV") == "dev" {
+		hostURL = "http://localhost"
+	}
+	log.Println("Listening on: ", hostURL)
 	log.Fatal(http.ListenAndServe(":3000", context.ClearHandler(n)))
 }
