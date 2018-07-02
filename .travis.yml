@@ -23,3 +23,15 @@ before_install:
 script: 
   - go install
   - go test ./...
+
+jobs:
+  include:
+  -stage: deploy to heroku test
+  deploy:
+    go: "1.9"
+  script: 
+  - go install
+  provider: heroku
+  on: dev
+  app:
+    dev: shielded-stream-75107 
