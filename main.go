@@ -73,6 +73,7 @@ func main() {
 	} else if os.Getenv("GO_ENV") == "dev" {
 		hostURL = "http://localhost"
 	}
+	port := os.Getenv("PORT")
 	log.Println("Listening on: ", hostURL)
-	log.Fatal(http.ListenAndServe(":3000", context.ClearHandler(n)))
+	log.Fatal(http.ListenAndServe(":"+port, context.ClearHandler(n)))
 }
