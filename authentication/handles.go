@@ -47,9 +47,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if os.Getenv("GO_ENV") == "dev" {
 		domain = "127.0.0.1:3000"
 	} else if os.Getenv("GO_ENV") == "test" {
-		domain = "s3-sih-test.s3-website-us-west-1.amazonaws.com"
+		domain = "http://s3-sih-test.s3-website-us-west-1.amazonaws.com"
 	} else if os.Getenv("GO_ENV") == "prod" {
-		domain = "schedulingishard.com"
+		domain = "https://schedulingishard.com"
 	}
 	// Limit the sessions to 1 24-hour day
 	session.Options.MaxAge = 86400 * 1
