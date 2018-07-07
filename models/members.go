@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	_ "github.com/lib/pq" // github.com/lib/pq
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -28,4 +29,30 @@ func CreateMember(m *NewMember) error {
 		return err
 	}
 	return err
+}
+
+// GetMemberID uses the primary email of a user to get the memberID from the member's table
+func GetMemberID(email string) (memberID string) {
+	sqlErr := db.QueryRow("SELECT id FROM members WHERE email = $1", email).Scan(&memberID)
+	if sqlErr == sql.ErrNoRows {
+		memberID = ""
+		return
+	}
+	if sqlErr != nil {
+		log.Println(sqlErr)
+	}
+	return
+}
+
+// GetMemberName grabs the name using the email
+func GetMemberName(email string) (name string) {
+	sqlErr := db.QueryRow("SELECT name FROM members WHERE email =$1", email).Scan(&name)
+	if sqlErr == sql.ErrNoRows {
+		name = ""
+		return
+	}
+	if sqlErr != nil {
+		log.Println(sqlErr)
+	}
+	return name
 }
