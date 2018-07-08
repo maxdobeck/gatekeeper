@@ -3,6 +3,7 @@ package members
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
 	"log"
 	"net/http"
@@ -73,5 +74,13 @@ func SignupMember(w http.ResponseWriter, r *http.Request) {
 
 // UpdateMember allows the user to update member information
 func UpdateMember(w http.ResponseWriter, r *http.Request) {
+	var msg resDetails
+	vars := mux.Vars(r)
+	if vars == nil {
+		msg.Status = "Error"
+		msg.Message = append(msg.Message, "Path is unexpected.")
+	}
 
+	log.Println("Path Variables: ", vars)
+	log.Println(msg)
 }

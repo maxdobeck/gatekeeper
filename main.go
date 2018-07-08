@@ -48,6 +48,7 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   allowedDomains,
+		AllowedMethods:   []string{"PUT", "POST", "GET"},
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"X-CSRF-Token"},
 		ExposedHeaders:   []string{"X-CSRF-Token"},
