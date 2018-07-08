@@ -13,6 +13,11 @@ type memberOutput struct {
 	Errors []string
 }
 
+type resDetails struct {
+	Status  string
+	Message []string
+}
+
 // SignupMember creates a single member
 func SignupMember(w http.ResponseWriter, r *http.Request) {
 	var memberValid = true
@@ -64,4 +69,9 @@ func SignupMember(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 	}
 	log.Println("User data supplied:", m)
+}
+
+// UpdateMember allows the user to update member information
+func UpdateMember(w http.ResponseWriter, r *http.Request) {
+
 }

@@ -30,7 +30,7 @@ func main() {
 	connStr := os.Getenv("PGURL")
 	models.ConnToDB(connStr)
 
-	var allowedDomains []string
+	var allowedDomains []string // need env variables for this
 	if os.Getenv("GO_ENV") == "dev" {
 		allowedDomains = []string{"http://127.0.0.1:3000", "http://localhost:3000"}
 	} else if os.Getenv("GO_ENV") == "test" {
@@ -64,13 +64,13 @@ func main() {
 	r.HandleFunc("/validsession", sessions.ValidSession).Methods("GET")
 	// Member CRUD routes
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
-	r.HandleFunc("/members/{id}", members.SignupMember).Methods("POST")
+	r.HandleFunc("/members/{id}", members.UpdateMember).Methods("PUT")
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
 	n.UseHandler(CSRF(r))
 
-	var hostURL string
+	var hostURL string // need env variables here too
 	if os.Getenv("GO_ENV") == "prod" {
 		hostURL = "https://rugged-wind-cave-81042.herokuapp.com"
 	} else if os.Getenv("GO_ENV") == "test" {
