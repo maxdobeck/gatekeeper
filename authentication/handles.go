@@ -74,7 +74,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	// Get the memberID based on the supplied email
 	memberID := models.GetMemberID(creds.Email)
-	memberName := models.GetMemberName(creds.Email)
+	memberName := models.GetMemberName(memberID)
 	m := memberDetails{
 		Status: "OK",
 		ID:     memberID,
