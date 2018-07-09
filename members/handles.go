@@ -21,7 +21,7 @@ type resDetails struct {
 }
 
 type member struct {
-	NewName string
+	NewName, NewEmail1, NewEmail2 string
 }
 
 // SignupMember creates a single member
@@ -97,24 +97,48 @@ func UpdateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if vars != nil {
-		var memberUpdate member
-		err := json.NewDecoder(r.Body).Decode(&memberUpdate)
-		if err != nil {
-			log.Println("Error decoding body >>", err)
+	var memberUpdate member
+	err := json.NewDecoder(r.Body).Decode(&memberUpdate)
+	if err != nil {
+		log.Println("Error decoding body >>", err)
+	}
+	// Check for bad name length
+	/*if len(memberUpdate.NewName) < 1 {
+		msg := resDetails{
+			Status:  "Bad Name",
+			Message: append(msg.Message, "Name must have more than 0 characters."),
 		}
-		if len(memberUpdate.NewName) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(msg)
+	} */
+	// Check for bad email length
+	/* if len(memberUpdate.NewEmail1) < 5 || len(memberUpdate.NewEmail2) < 5 {
+		msg := resDetails{
+			Status:  "Bad Name",
+			Message: append(msg.Message, "Email must have more than 0 characters."),
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(msg)
+	} */
+	log.Println("New Name: ", memberUpdate.NewName)
+	log.Println("New Email: ", memberUpdate.NewEmail1)
+	if len(memberUpdate.NewName) >= 1 {
+		if models.UpdateMemberName(vars["id"], memberUpdate.NewName) == true {
+			msg.Message = append(msg.Message, memberUpdate.NewName)
+			msg.Status = "OK"
+			json.NewEncoder(w).Encode(msg)
+		}
+	} else if len(memberUpdate.NewEmail1) >= 5 || len(memberUpdate.NewEmail2) >= 5 {
+		if memberUpdate.NewEmail1 != memberUpdate.NewEmail2 {
 			msg := resDetails{
-				Status:  "Bad Name",
-				Message: []string{"Name must have more than 0 characters."},
+				Status:  "Bad Email",
+				Message: append(msg.Message, "Emails don't match."),
 			}
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(msg)
 			return
-		}
-		log.Println("New Name: ", memberUpdate.NewName)
-		if models.UpdateMemberName(vars["id"], memberUpdate.NewName) == true {
-			msg.Message = append(msg.Message, memberUpdate.NewName)
+		} else if models.UpdateMemberEmail(vars["id"], memberUpdate.NewEmail1) == true {
+			msg.Message = append(msg.Message, memberUpdate.NewEmail1)
 			msg.Status = "OK"
 			json.NewEncoder(w).Encode(msg)
 		}

@@ -69,3 +69,15 @@ func UpdateMemberName(id string, name string) bool {
 	}
 	return true
 }
+
+// UpdateMemberEmail uses the member ID to insert a new email
+func UpdateMemberEmail(id string, email string) bool {
+	_, sqlErr := db.Query("UPDATE members SET name = $2 WHERE id = $1", id, email)
+	if sqlErr == sql.ErrNoRows {
+		return false
+	}
+	if sqlErr != nil {
+		log.Println(sqlErr)
+	}
+	return true
+}
