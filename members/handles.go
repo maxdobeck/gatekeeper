@@ -32,6 +32,8 @@ func SignupMember(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&m)
 	if err != nil {
 		log.Println("Error decoding new member >>", err)
+		log.Println("Bad New Member data provided: ", r.Body)
+		signupErrs = append(signupErrs, "Error processing new member data.")
 	}
 
 	if m.Name == "" {

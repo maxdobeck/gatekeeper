@@ -23,7 +23,7 @@ func CreateMember(m *NewMember) error {
 	if hashErr != nil {
 		log.Println("Error hashing password: ", hashErr)
 	}
-	_, err := db.Query("INSERT INTO members(name, email, password) VALUES ($1,$2, $3)", m.Name, m.Email, hashedPw)
+	_, err := Db.Query("INSERT INTO members(name, email, password) VALUES ($1,$2, $3)", m.Name, m.Email, hashedPw)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -33,7 +33,7 @@ func CreateMember(m *NewMember) error {
 
 // GetMemberID uses the primary email of a user to get the memberID from the member's table
 func GetMemberID(email string) (memberID string) {
-	sqlErr := db.QueryRow("SELECT id FROM members WHERE email = $1", email).Scan(&memberID)
+	sqlErr := Db.QueryRow("SELECT id FROM members WHERE email = $1", email).Scan(&memberID)
 	if sqlErr == sql.ErrNoRows {
 		memberID = ""
 		return
@@ -46,7 +46,7 @@ func GetMemberID(email string) (memberID string) {
 
 // GetMemberName grabs the name using the email
 func GetMemberName(id string) (name string) {
-	sqlErr := db.QueryRow("SELECT name FROM members WHERE id =$1", id).Scan(&name)
+	sqlErr := Db.QueryRow("SELECT name FROM members WHERE id =$1", id).Scan(&name)
 	if sqlErr == sql.ErrNoRows {
 		name = ""
 		return
@@ -59,7 +59,7 @@ func GetMemberName(id string) (name string) {
 
 // UpdateMemberName uses the member ID to insert a new name
 func UpdateMemberName(id string, name string) bool {
-	_, sqlErr := db.Query("UPDATE members SET name = $2 WHERE id = $1", id, name)
+	_, sqlErr := Db.Query("UPDATE members SET name = $2 WHERE id = $1", id, name)
 	if sqlErr == sql.ErrNoRows {
 		name = ""
 		return false
@@ -72,7 +72,7 @@ func UpdateMemberName(id string, name string) bool {
 
 // UpdateMemberEmail uses the member ID to insert a new email
 func UpdateMemberEmail(id string, email string) bool {
-	_, sqlErr := db.Query("UPDATE members SET name = $2 WHERE id = $1", id, email)
+	_, sqlErr := Db.Query("UPDATE members SET name = $2 WHERE id = $1", id, email)
 	if sqlErr == sql.ErrNoRows {
 		return false
 	}
