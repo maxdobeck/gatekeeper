@@ -77,8 +77,64 @@ func SignupMember(w http.ResponseWriter, r *http.Request) {
 	log.Println("User data supplied:", m)
 }
 
-// UpdateMember allows the user to update member information and returns an error or the newly made member name
-func UpdateMember(w http.ResponseWriter, r *http.Request) {
+// UpdateMemberEmail allows the user to update member information and returns an error or the newly made member name
+func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
+	if sessions.GoodSession(r) != true {
+		msg := resDetails{
+			Status:  "Expired session or cookie",
+			Message: []string{"Session Expired.  Log out and log back in."},
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+
+	var msg resDetails
+	vars := mux.Vars(r)
+	if vars == nil || vars["id"] == "" {
+		msg.Status = "Error"
+		msg.Message = append(msg.Message, "Path is unexpected.")
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+
+	var memberUpdate member
+	err := json.NewDecoder(r.Body).Decode(&memberUpdate)
+	if err != nil {
+		log.Println("Error decoding body >>", err)
+	}
+	// Check for bad email length
+	/* if len(memberUpdate.NewEmail1) < 5 || len(memberUpdate.NewEmail2) < 5 {
+		msg := resDetails{
+			Status:  "Bad Name",
+			Message: append(msg.Message, "Email must have more than 0 characters."),
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(msg)
+	} */
+	log.Println("New Email: ", memberUpdate.NewEmail1)
+	if len(memberUpdate.NewEmail1) >= 5 || len(memberUpdate.NewEmail2) >= 5 {
+		if memberUpdate.NewEmail1 != memberUpdate.NewEmail2 {
+			msg := resDetails{
+				Status:  "Bad Email",
+				Message: append(msg.Message, "Emails don't match."),
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(msg)
+			return
+		} else if models.UpdateMemberEmail(vars["id"], memberUpdate.NewEmail1) == true {
+			msg.Message = append(msg.Message, memberUpdate.NewEmail1)
+			msg.Status = "OK"
+			json.NewEncoder(w).Encode(msg)
+		}
+	}
+
+	log.Println("Path Variables: ", vars)
+	log.Println("Member's ID: ", vars["id"])
+	log.Println(msg)
+}
+
+// UpdateMemberName will update the existing member name for authorized sessions
+func UpdateMemberName(w http.ResponseWriter, r *http.Request) {
 	if sessions.GoodSession(r) != true {
 		msg := resDetails{
 			Status:  "Expired session or cookie",
@@ -111,34 +167,10 @@ func UpdateMember(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(msg)
 	} */
-	// Check for bad email length
-	/* if len(memberUpdate.NewEmail1) < 5 || len(memberUpdate.NewEmail2) < 5 {
-		msg := resDetails{
-			Status:  "Bad Name",
-			Message: append(msg.Message, "Email must have more than 0 characters."),
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(msg)
-	} */
 	log.Println("New Name: ", memberUpdate.NewName)
-	log.Println("New Email: ", memberUpdate.NewEmail1)
 	if len(memberUpdate.NewName) >= 1 {
 		if models.UpdateMemberName(vars["id"], memberUpdate.NewName) == true {
 			msg.Message = append(msg.Message, memberUpdate.NewName)
-			msg.Status = "OK"
-			json.NewEncoder(w).Encode(msg)
-		}
-	} else if len(memberUpdate.NewEmail1) >= 5 || len(memberUpdate.NewEmail2) >= 5 {
-		if memberUpdate.NewEmail1 != memberUpdate.NewEmail2 {
-			msg := resDetails{
-				Status:  "Bad Email",
-				Message: append(msg.Message, "Emails don't match."),
-			}
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(msg)
-			return
-		} else if models.UpdateMemberEmail(vars["id"], memberUpdate.NewEmail1) == true {
-			msg.Message = append(msg.Message, memberUpdate.NewEmail1)
 			msg.Status = "OK"
 			json.NewEncoder(w).Encode(msg)
 		}

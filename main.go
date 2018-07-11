@@ -65,7 +65,8 @@ func main() {
 	r.HandleFunc("/validsession", sessions.ValidSession).Methods("GET")
 	// Member CRUD routes
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
-	r.HandleFunc("/members/{id}", members.UpdateMember).Methods("PUT")
+	r.HandleFunc("/members/{id}/email", members.UpdateMemberEmail).Methods("PUT")
+	r.HandleFunc("/members/{id}/name", members.UpdateMemberName).Methods("PUT")
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
