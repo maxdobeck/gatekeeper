@@ -1,6 +1,7 @@
 package members
 
 import (
+	"encoding/json"
 	"fmt"
 	_ "github.com/lib/pq" // github.com/lib/pq
 	"github.com/maxdobeck/gatekeeper/models"
@@ -10,6 +11,11 @@ import (
 	"strings"
 	"testing"
 )
+
+type memberSignup struct {
+	Status string   `json:"Status"`
+	Errors []string `json:"Errors"`
+}
 
 // TestSignupMemberDuplicateEmail tries to sign up the same email twice
 func TestSignupMemberDuplicateEmail(t *testing.T) {
@@ -40,10 +46,12 @@ func TestSignupMemberDuplicateEmail(t *testing.T) {
 	//Signup same member again
 	wSignup2 := httptest.NewRecorder()
 	SignupMember(wSignup2, dupReq)
-	expectedRes := `{"Status":"Member Not Created","Errors":["Email is already in use."]}`
-	if wSignup2.Body.String() != expectedRes {
+	actualRes := memberSignup{}
+	json.Unmarshal([]byte(wSignup2.Body.String()), &actualRes)
+	var expectedRes [1]string
+	expectedRes[0] = "Email is already in use."
+	if actualRes.Errors[0] != expectedRes[0] {
 		t.Error("SignupMember allowed a duplicate email through.", wSignup2.Body)
-		t.Fail()
 	}
 }
 
