@@ -57,6 +57,8 @@ func TestSignupMemberDuplicateEmail(t *testing.T) {
 
 // TestChangeMemberEmail attempts to update the user's name value
 func TestChangeMemberEmail(t *testing.T) {
+	// Need to add Mux Router here
+
 	connStr := os.Getenv("PGURL")
 	models.ConnToDB(connStr)
 	// Replace this with some sort of DELETE_USER call at some point.  So a cascading del can be performed
