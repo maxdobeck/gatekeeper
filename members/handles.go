@@ -92,7 +92,8 @@ func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
 
 	var msg resDetails
 	vars := mux.Vars(r)
-	if vars == nil || vars["id"] == "" {
+	if vars["id"] == "" {
+		log.Println("Unexpected URL:", r.URL)
 		msg.Status = "Error"
 		msg.Message = append(msg.Message, "Path is unexpected.")
 		json.NewEncoder(w).Encode(msg)

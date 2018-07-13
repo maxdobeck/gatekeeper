@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/lib/pq" // github.com/lib/pq
+	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/models"
 	"net/http"
 	"net/http/httptest"
@@ -37,7 +38,6 @@ func TestSignupMemberDuplicateEmail(t *testing.T) {
 	SignupMember(wSignup, signupReq)
 
 	fmt.Println("Now try and sign up user with same email")
-
 	dupBody := strings.NewReader(`{"email": "testValidCreds@gmail.com", "email2":"testValidCreds@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Valid User Signup"}`)
 	dupReq, dupSignupErr := http.NewRequest("POST", "/members", dupBody)
 	if dupSignupErr != nil {
@@ -74,17 +74,31 @@ func TestChangeMemberEmail(t *testing.T) {
 
 	var id string
 	findErr := models.Db.QueryRow("SELECT id FROM members WHERE email like 'someEmail@gmail.com'").Scan(&id)
-	fmt.Println(findErr)
+	if findErr != nil {
+		fmt.Println(findErr)
+	}
+
+	// Login to start a session
+	loginBody := strings.NewReader(`{"email": "someEmail@gmail.com", "password": "supersecret"}`)
+	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
+	if loginErr != nil {
+		t.Fail()
+	}
+	wLogin := httptest.NewRecorder()
+	authentication.Login(wLogin, loginReq)
 
 	// Change the email
-	body := strings.NewReader(`{"newEmail": "testEmailChange@gmail.com", "newEmail2":"testEmailChange@gmail.com"}`)
-	req, err := http.NewRequest("POST", "/members/"+id+"/email", body)
+	body := strings.NewReader(`{"newEmail1": "newEmail@gmail.com", "newEmail2":"newEmail@gmail.com"}`)
+	req, err := http.NewRequest("PUT", "/members/"+id+"/email", body)
 	if err != nil {
 		t.Fail()
 	}
 	wChange := httptest.NewRecorder()
+	cookies := wLogin.Result().Cookies()
+	req.AddCookie(cookies[0])
+	fmt.Println(req)
 	UpdateMemberEmail(wChange, req)
-	fmt.Println(wChange)
+	fmt.Println("Response:", wChange)
 }
 
 func TestChangeMemberName(t *testing.T) {
