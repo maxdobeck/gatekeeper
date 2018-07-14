@@ -19,6 +19,11 @@ type memberSignup struct {
 	Errors []string `json:"Errors"`
 }
 
+type apiResp struct {
+	Status  string   `json:"Status"`
+	Message []string `json:"Message"`
+}
+
 // TestSignupMemberDuplicateEmail tries to sign up the same email twice
 func TestSignupMemberDuplicateEmail(t *testing.T) {
 	connStr := os.Getenv("PGURL")
@@ -58,13 +63,14 @@ func TestSignupMemberDuplicateEmail(t *testing.T) {
 
 // TestChangeMemberEmail attempts to update the user's name value
 func TestChangeMemberEmail(t *testing.T) {
-	// Need to add Mux Router here
-
 	connStr := os.Getenv("PGURL")
 	models.ConnToDB(connStr)
 	// Replace this with some sort of DELETE_USER call at some point.  So a cascading del can be performed
 	_, delErr := models.Db.Query("DELETE FROM members WHERE email like 'someEmail@gmail.com'")
-	fmt.Println(delErr)
+	if delErr != nil {
+		fmt.Println(delErr)
+
+	}
 
 	signupBody := strings.NewReader(`{"email": "someEmail@gmail.com", "email2":"someEmail@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Standard Signup"}`)
 	signupReq, signupErr := http.NewRequest("POST", "/members", signupBody)
@@ -73,7 +79,6 @@ func TestChangeMemberEmail(t *testing.T) {
 	}
 	wSignup := httptest.NewRecorder()
 	SignupMember(wSignup, signupReq)
-	fmt.Println(wSignup)
 
 	var id string
 	findErr := models.Db.QueryRow("SELECT id FROM members WHERE email like 'someEmail@gmail.com'").Scan(&id)
@@ -102,8 +107,12 @@ func TestChangeMemberEmail(t *testing.T) {
 	router := mux.NewRouter()
 	router.HandleFunc("/members/{id}/email", UpdateMemberEmail)
 	router.ServeHTTP(wChange, req)
-	//UpdateMemberEmail(wChange, req)
-	fmt.Println("Response:", wChange)
+
+	actualRes := apiResp{}
+	json.Unmarshal([]byte(wChange.Body.String()), &actualRes)
+	if actualRes.Message[0] != "newEmail@gmail.com" {
+		t.Fail()
+	}
 }
 
 func TestChangeMemberName(t *testing.T) {
@@ -111,8 +120,12 @@ func TestChangeMemberName(t *testing.T) {
 	models.ConnToDB(connStr)
 	// Replace this with some sort of DELETE_USER call at some point.  So a cascading del can be performed
 	_, delErr := models.Db.Query("DELETE FROM members WHERE email like 'someEmail@gmail.com'")
-	fmt.Println(delErr)
+	if delErr != nil {
+		fmt.Println(delErr)
 
+	}
+
+	// Signup a new user - turn this into a function or suite at some point
 	signupBody := strings.NewReader(`{"email": "someEmail@gmail.com", "email2":"someEmail@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Standard Signup"}`)
 	signupReq, signupErr := http.NewRequest("POST", "/members", signupBody)
 	if signupErr != nil {
@@ -120,14 +133,38 @@ func TestChangeMemberName(t *testing.T) {
 	}
 	wSignup := httptest.NewRecorder()
 	SignupMember(wSignup, signupReq)
-	fmt.Println(wSignup)
 
-	// Change the email
-	body := strings.NewReader(`{"newEmail": "testEmailChange@gmail.com", "newEmail2":"testEmailChange@gmail.com"}`)
-	req, err := http.NewRequest("POST", "/members/", body)
+	var id string
+	findErr := models.Db.QueryRow("SELECT id FROM members WHERE email like 'someEmail@gmail.com'").Scan(&id)
+	if findErr != nil {
+		fmt.Println(findErr)
+	}
+
+	// Login to start a session
+	loginBody := strings.NewReader(`{"email": "someEmail@gmail.com", "password": "supersecret"}`)
+	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
+	if loginErr != nil {
+		t.Fail()
+	}
+	wLogin := httptest.NewRecorder()
+	authentication.Login(wLogin, loginReq)
+
+	// Change the member's Name
+	body := strings.NewReader(`{"newname": "SuperPlus Signup"}`)
+	req, err := http.NewRequest("PUT", "/members/"+id+"/name", body)
 	if err != nil {
 		t.Fail()
 	}
 	wChange := httptest.NewRecorder()
-	UpdateMemberEmail(wChange, req)
+	req.AddCookie(wLogin.Result().Cookies()[0])
+
+	router := mux.NewRouter()
+	router.HandleFunc("/members/{id}/name", UpdateMemberName)
+	router.ServeHTTP(wChange, req)
+
+	actualRes := apiResp{}
+	json.Unmarshal([]byte(wChange.Body.String()), &actualRes)
+	if actualRes.Message[0] != "SuperPlus Signup" {
+		t.Fail()
+	}
 }
