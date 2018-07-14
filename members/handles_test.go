@@ -3,6 +3,7 @@ package members
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq" // github.com/lib/pq
 	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/models"
@@ -96,10 +97,12 @@ func TestChangeMemberEmail(t *testing.T) {
 		t.Fail()
 	}
 	wChange := httptest.NewRecorder()
-	cookies := wLogin.Result().Cookies()
-	req.AddCookie(cookies[0])
-	fmt.Println(req)
-	UpdateMemberEmail(wChange, req)
+	req.AddCookie(wLogin.Result().Cookies()[0])
+
+	router := mux.NewRouter()
+	router.HandleFunc("/members/{id}/email", UpdateMemberEmail)
+	router.ServeHTTP(wChange, req)
+	//UpdateMemberEmail(wChange, req)
 	fmt.Println("Response:", wChange)
 }
 
