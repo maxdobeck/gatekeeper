@@ -13,6 +13,7 @@ pipeline {
       steps {
         echo 'Building...'
         sh 'go version'
+        sh 'go get ./...'
         sh 'go build'
       }
     }
