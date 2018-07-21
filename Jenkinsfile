@@ -15,5 +15,10 @@ pipeline {
         sh 'go version'
       }
     }
-  }
+    stage('Test') {
+      steps {
+          sh 'go test ./...'
+      }
+    }
+  } 
 }
