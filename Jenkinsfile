@@ -11,21 +11,24 @@ pipeline {
   stages {
     stage('Build') {
       steps {
+        sh '.jenkins/go-deps.sh'
         sh 'go version'
-        sh 'go get github.com/antonlindstrom/pgstore'
-        sh 'go get github.com/gorilla/context'
-        sh 'go get github.com/gorilla/csrf'
-        sh 'go get github.com/gorilla/mux'
-        sh 'go get github.com/lib/pq'
-        sh 'go get github.com/rs/cors'
-        sh 'go get github.com/urfave/negroni'
-        sh 'ls /go/src/github.com/maxdobeck'
         sh 'go build'
       }
     }
     stage('Test') {
       steps {
           sh 'go test ./...'
+      }
+    }
+    stage('Deploy to Heroku') {
+      when {
+        branch 'dev'
+      }
+    }
+    stage('Deploy to Production') {
+      when {
+        branch 'prod'
       }
     }
   } 
