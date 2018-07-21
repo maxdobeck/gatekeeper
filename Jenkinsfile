@@ -25,10 +25,16 @@ pipeline {
       when {
         branch 'dev'
       }
+      steps {
+        echo 'deploying to heroku for dev test'
+      }
     }
     stage('Deploy to Production') {
       when {
         branch 'prod'
+      }
+      steps { 
+        echo 'deploying to heroku prod server'
       }
     }
   } 
