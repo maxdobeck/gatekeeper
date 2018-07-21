@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 sh 'go get github.com/antonlindstrom/pgstore'
 sh 'go get github.com/gorilla/context'
 sh 'go get github.com/gorilla/csrf'
