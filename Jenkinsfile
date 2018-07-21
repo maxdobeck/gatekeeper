@@ -11,7 +11,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'go get ./...'        
+        sh 'go get ./...'
         sh 'go version'
         sh 'go build'
       }
