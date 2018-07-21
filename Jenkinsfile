@@ -12,7 +12,14 @@ pipeline {
     stage('Build') {
       steps {
         sh 'go version'
-        sh 'go get ./...'
+        sh 'go get github.com/antonlindstrom/pgstore'
+        sh 'go get github.com/gorilla/context'
+        sh 'go get github.com/gorilla/csrf'
+        sh 'go get github.com/gorilla/mux'
+        sh 'go get github.com/lib/pq'
+        sh 'go get github.com/rs/cors'
+        sh 'go get github.com/urfave/negroni'
+        sh 'go get golang.org/x/crypto'
         sh 'go build'
       }
     }
