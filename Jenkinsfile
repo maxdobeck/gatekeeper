@@ -21,7 +21,7 @@ pipeline {
           sh 'go test ./...'
       }
     }
-    stage('Deploy to Heroku') {
+    stage('Deploy to Dev') {
       when {
         branch 'dev'
       }
@@ -29,7 +29,7 @@ pipeline {
         echo 'deploying to heroku for dev test'
       }
     }
-    stage('Deploy to Production') {
+    stage('Deploy to Prod') {
       when {
         branch 'prod'
       }
