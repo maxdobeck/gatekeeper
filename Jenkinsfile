@@ -11,7 +11,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh '.jenkins/go-deps.sh'
+        sh './jenkins/go-deps.sh'
         sh 'go version'
         sh 'go build'
       }
