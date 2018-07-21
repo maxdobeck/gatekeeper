@@ -3,7 +3,7 @@ pipeline {
     docker {
         image 'golang:1.9.7'
         args '-p 3050:3050 -p 5000:5000'
-        COPY .netrc /
+        // COPY .netrc /
     }
   }
   environment {
@@ -12,6 +12,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
+        sh 'pwd'
         sh 'go get ./...'
         sh 'go version'
         sh 'go build'
