@@ -3,6 +3,7 @@ pipeline {
     docker {
         image 'golang:1.9.7'
         args '-p 3050:3050 -p 5000:5000'
+        copy(file:".netrc", tofile:".netrc")
     }
   }
   environment {
