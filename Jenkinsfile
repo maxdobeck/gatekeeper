@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-        image 'golang:1.9-alpine'
+        image 'golang:1.9.7'
         args '-p 3050:3050 -p 5000:5000'
     }
   }
@@ -11,7 +11,6 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        echo 'Building...'
         sh 'go version'
         sh 'go get ./...'
         sh 'go build'
