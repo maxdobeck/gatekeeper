@@ -19,6 +19,7 @@ pipeline {
         sh 'go get github.com/lib/pq'
         sh 'go get github.com/rs/cors'
         sh 'go get github.com/urfave/negroni'
+        sh 'ls /go/src/github.com/maxdobeck'
         sh 'go build'
       }
     }
