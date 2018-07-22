@@ -9,7 +9,7 @@ pipeline {
         sh 'ls /go/bin'
         sh 'go version'
         // sh 'ls ./jenkins/scripts/go-build.sh'
-        sh '/go/src/github.com/maxdobeck/gatekeeper/git checkout create-jenkinsfile && /go/src/github.com/maxdobeck/gatekeeper/git pull'
+        sh 'ls /go/src/github.com/maxdobeck/gatekeeper &&  /go/src/github.com/maxdobeck/gatekeeper/git checkout create-jenkinsfile && /go/src/github.com/maxdobeck/gatekeeper/git pull'
         sh '/go/src/github.com/maxdobeck/gatekeeper/go get ./...'
         sh '/go/src/github.com/maxdobeck/gatekeeper/go install'
         sh 'ls /go/bin'
