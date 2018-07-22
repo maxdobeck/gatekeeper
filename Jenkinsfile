@@ -11,7 +11,7 @@ pipeline {
         sh 'pwd && ls . && ./jenkins/scripts/go-build.sh'
       }
     }
-    stage('Test') {
+    /*stage('Test') {
       steps {
           sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go test ./...'
       }
@@ -31,6 +31,6 @@ pipeline {
       steps { 
         echo 'deploying to heroku prod server'
       }
-    }
-  } 
+    }*/
+  }
 }
