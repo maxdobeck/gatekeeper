@@ -12,8 +12,8 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'go get ./...'
         sh 'cat .netrc'
+        sh 'go get ./...'
         sh 'go version'
         sh 'go build'
       }
