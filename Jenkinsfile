@@ -12,7 +12,6 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'docker conatiner ls'
         sh 'pwd && ls -a && cat .netrc'
         sh 'go get ./...'
         sh 'go version'
