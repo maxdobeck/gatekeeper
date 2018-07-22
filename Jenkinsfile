@@ -1,19 +1,13 @@
 pipeline {
-  agent {
-    docker {
-        image 'golang:1.9.7'
-        args '-v /var/jenkins_home/.netrc:/root/.netrc -p 3050:3050 -p 5000:5000'
-    }
-  }
+  agent { dockerfile true }
   environment {
       CI = 'true'
   }
   stages {
     stage('Build') {
       steps {
-        sh 'pwd && ls -a && cat .netrc'
-        sh 'go get ./...'
         sh 'go version'
+        sh 'go get ./...'
         sh 'go build'
       }
     }
