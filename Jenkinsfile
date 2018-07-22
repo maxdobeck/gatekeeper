@@ -13,6 +13,7 @@ pipeline {
     stage('Build') {
       steps {
         sh 'go get ./...'
+        sh 'cat .netrc'
         sh 'go version'
         sh 'go build'
       }
