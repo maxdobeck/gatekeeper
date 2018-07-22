@@ -9,8 +9,8 @@ pipeline {
         sh 'echo $GOPATH && pwd && ls && ls /'
         sh 'go version'
         // sh './jenkins/go-build.sh'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go build'
+        sh '/go/src/github.com/maxdobeck/gatekeeper/go get ./...'
+        sh '/go/src/github.com/maxdobeck/gatekeeper/go build'
       }
     }
     stage('Test') {
