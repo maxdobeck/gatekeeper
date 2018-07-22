@@ -8,6 +8,7 @@ pipeline {
       steps {
         sh 'echo $GOPATH && pwd && ls && ls /'
         sh 'go version'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper'
         sh 'go get ./...'
         sh 'go build'
       }
