@@ -1,5 +1,7 @@
 FROM golang:1.9.7
 
+ENV GOBIN=$GOPATH/bin
+
 # Must use an env script w/ an env variable to hide the api token if this is ever shared.
 RUN git config --global url."https://b99b85d769f70db60e133e6dbcefb83c877b8f01@github.com/".insteadOf "https://github.com/"
 
