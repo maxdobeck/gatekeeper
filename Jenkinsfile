@@ -7,7 +7,7 @@ pipeline {
     stage('Build') {
       steps {
         sh 'go version'
-        sh 'ls ./jenkins/scripts/go-build.sh'
+        sh './jenkins/scripts/go-build.sh'
       }
     }
     stage('Test') {
