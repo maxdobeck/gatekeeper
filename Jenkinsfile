@@ -6,6 +6,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
+        sh 'echo $GOPATH && pwd && ls'
         sh 'go version'
         sh 'go get ./...'
         sh 'go build'
