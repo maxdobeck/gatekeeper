@@ -8,7 +8,8 @@ pipeline {
       steps {
         sh 'echo $GOPATH && pwd && ls && ls /'
         sh 'go version'
-        sh './jenkins/go-build.sh'
+        sh 'ls jenkins/'
+        sh 'jenkins/go-build.sh'
       }
     }
     stage('Test') {
