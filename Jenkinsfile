@@ -6,10 +6,10 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'echo $GOPATH && pwd && ls && ls /'
+        sh 'pwd && ls && ls /'
         sh 'ls /root && ls /var/jenkins_home'
         sh 'go version'
-        sh 'jenkins/go-build.sh'
+        sh 'jenkins/scripts/go-build.sh'
       }
     }
     stage('Test') {
