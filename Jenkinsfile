@@ -12,6 +12,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
+        sh 'ls /'
         sh 'pwd && ls -a && cat .netrc'
         sh 'go get ./...'
         sh 'go version'
