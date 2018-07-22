@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh bash
 
 sh 'ls /go/bin'
 sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
