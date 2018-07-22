@@ -6,13 +6,8 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'ls /go/bin'
         sh 'go version'
-        // sh 'ls ./jenkins/scripts/go-build.sh'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout create-jenkinsfile && git pull'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
-        sh 'ls /go/bin'
+        sh 'ls ./jenkins/scripts/go-build.sh'
       }
     }
     stage('Test') {
