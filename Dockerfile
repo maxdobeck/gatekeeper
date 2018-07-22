@@ -11,9 +11,9 @@ RUN git clone https://github.com/maxdobeck/gatekeeper.git
 
 WORKDIR /go/src/github.com/maxdobeck/gatekeeper
 
-RUN git branch -a
-
 # This was to ensure that the git checkout process worked and and the go get cmd worked.
+#RUN git branch -a
+
 # RUN git checkout create-jenkinsfile
 
 # RUN go get ./...
