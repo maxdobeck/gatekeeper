@@ -2,8 +2,8 @@ pipeline {
   agent {
     docker {
         image 'golang:1.9.7'
-        args '-p 3050:3050 -p 5000:5000'
         args 'ADD /var/jenkins_home/.netrc /root/.netrc'
+        args '-p 3050:3050 -p 5000:5000'
     }
   }
   environment {
