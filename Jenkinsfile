@@ -9,7 +9,7 @@ pipeline {
         sh 'pwd && ls && ls /'
         sh 'ls /root && ls /var/jenkins_home'
         sh 'go version'
-        sh 'jenkins/scripts/go-build.sh'
+        sh './jenkins/scripts/go-build.sh'
       }
     }
     stage('Test') {
