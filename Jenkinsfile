@@ -17,7 +17,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-          sh 'go test ./...'
+          sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go test ./...'
       }
     }
     stage('Deploy to Dev') {
