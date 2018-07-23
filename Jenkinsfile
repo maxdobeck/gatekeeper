@@ -7,8 +7,10 @@ pipeline {
     stage('Build') {
       steps {
         sh 'go version'
-        sh 'ls -l ./jenkins/scripts/go-build.sh'
-        sh 'pwd && ls . && jenkins/scripts/go-build.sh'
+        // sh 'pwd && ls . && jenkins/scripts/go-build.sh'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout create-jenkinsfile && git pull'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
       }
     }
     /*stage('Test') {
