@@ -7,7 +7,6 @@ pipeline {
     stage('Build') {
       steps {
         sh 'go version'
-        sh 'chmod 0755 jenkins/scripts/go-build.sh'
         sh 'ls -l ./jenkins/scripts/go-build.sh'
         sh 'pwd && ls . && jenkins/scripts/go-build.sh'
       }
