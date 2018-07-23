@@ -4,7 +4,7 @@ pipeline {
       CI = 'true'
   }
   stages {
-    stage('Build') {
+    stage('Build for Dev') {
       when {
         branch "dev"
       }
@@ -14,6 +14,8 @@ pipeline {
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
       }
+    }
+    stage('Build for Master') {
       when {
         branch "master"
       }
@@ -23,6 +25,8 @@ pipeline {
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
       }
+    }
+    stage('Build for Prod') {
       when {
         branch "prod"
       }
