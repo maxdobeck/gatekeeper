@@ -1,5 +1,5 @@
 pipeline {
-  agent { dockerfile { args '-v /var/jenkins_home/go/bin:/go/bin'} }
+  agent { dockerfile { args '-v /go/bin:/go/bin'} }
   environment {
       CI = 'true'
   }
