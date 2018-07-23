@@ -10,7 +10,7 @@ pipeline {
       }
       steps {
         sh 'go version'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout dev && git pull dev'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout dev && git pull'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
       }
