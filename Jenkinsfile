@@ -37,12 +37,12 @@ pipeline {
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
       }
     }
-    /*stage('Test') {
+    stage('Test') {
       steps {
           sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go test ./...'
       }
     }
-    stage('Deploy to Dev') {
+    /*stage('Deploy to Dev') {
       when {
         branch 'dev'
       }
