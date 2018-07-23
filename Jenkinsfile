@@ -1,5 +1,5 @@
 pipeline {
-  agent { dockerfile { args '-v /go/bin:/go/bin'} }
+  agent { dockerfile { args '-v /go/bin:/go/bin:ro'} }
   environment {
       CI = 'true'
   }
