@@ -5,9 +5,30 @@ pipeline {
   }
   stages {
     stage('Build') {
+      when {
+        branch "dev"
+      }
       steps {
         sh 'go version'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git pull --all'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout dev && git pull dev'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
+      }
+      when {
+        branch "master"
+      }
+      steps {
+        sh 'go version'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git pull'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
+      }
+      when {
+        branch "prod"
+      }
+      steps {
+        sh 'go version'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout prod && git pull'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
       }
