@@ -32,7 +32,7 @@ func main() {
 
 	var allowedDomains []string // need env variables for this
 	if os.Getenv("GO_ENV") == "dev" {
-		allowedDomains = []string{"http://127.0.0.1:3000", "http://localhost:3000"}
+		allowedDomains = []string{"http://127.0.0.1:3000", "http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:3050"}
 	} else if os.Getenv("GO_ENV") == "test" {
 		allowedDomains = []string{"http://s3-sih-test.s3-website-us-west-1.amazonaws.com"}
 	} else if os.Getenv("GO_ENV") == "prod" {
