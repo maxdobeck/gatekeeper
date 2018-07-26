@@ -39,6 +39,7 @@ pipeline {
     }
     stage('Test') {
       steps {
+        sh 'git branch'
           sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go test ./...'
       }
     }
