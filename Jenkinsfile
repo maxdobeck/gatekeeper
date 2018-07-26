@@ -9,7 +9,7 @@ pipeline {
         branch "dev"
       }
       steps {
-        sh 'go version'
+        sh 'go version && git branch'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout dev && git pull'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
@@ -20,7 +20,7 @@ pipeline {
         branch "master"
       }
       steps {
-        sh 'go version'
+        sh 'go version && git branch'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git pull'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
@@ -31,7 +31,7 @@ pipeline {
         branch "prod"
       }
       steps {
-        sh 'go version'
+        sh 'go version && git branch'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout prod && git pull'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go get ./...'
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go install'
