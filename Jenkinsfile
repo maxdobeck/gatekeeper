@@ -1,5 +1,5 @@
 pipeline {
-  agent { dockerfile { args '-e PGURL=postgres://sfdev:sfdev@localhost:5432/scheduler_fairy_dev -e GO_ENV=dev' } }
+  agent { dockerfile { args '--net="host" -e PGURL=postgres://sfdev:sfdev@localhost:5432/scheduler_fairy_dev -e GO_ENV=dev -p 3050:3050 -e PORT=3050' } }
   environment {
       CI = 'true'
   }
