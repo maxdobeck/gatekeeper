@@ -49,7 +49,7 @@ pipeline {
       }
       steps {
         echo 'deploying to heroku for dev test'
-        echo 'ls /go/bin'
+        sh 'ls /go/bin'
       }
     }
     /*stage('Deploy to Prod') {
