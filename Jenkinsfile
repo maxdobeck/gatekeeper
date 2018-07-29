@@ -49,7 +49,7 @@ pipeline {
       }
       steps {
         echo 'Ready for deploy to Heroku'
-        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout dev && git remote -v && git push heroku-test dev:master'
+        sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git remote add heroku-test https://git.heroku.com/shielded-stream-75107.git && git checkout dev && git remote -v && git push heroku-test dev:master'
       }
     }
     /*stage('Deploy to Prod') {
