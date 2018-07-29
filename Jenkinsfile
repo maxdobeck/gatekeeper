@@ -48,8 +48,7 @@ pipeline {
         branch 'dev'
       }
       steps {
-        echo 'deploying to heroku for dev test'
-        sh 'ls /go/bin'
+        echo 'Ready for deploy to Heroku'
       }
     }
     /*stage('Deploy to Prod') {
