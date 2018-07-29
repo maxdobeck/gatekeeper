@@ -8,7 +8,7 @@ jobs:
       # specify the version
       - image: circleci/golang:1.10
         environment:
-          PGURL: postgresql://root@localhost/circle_test
+          PGURL: postgresql://root@localhost/circle_test?sslmode=disable
           GO_ENV: dev
       
       # Specify service dependencies here if necessary
