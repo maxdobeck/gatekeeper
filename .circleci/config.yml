@@ -7,19 +7,36 @@ jobs:
     docker:
       # specify the version
       - image: circleci/golang:1.10
+        environment:
+          PGURL: postgresql://root@localhost/circle_test
+          GO_ENV: dev
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
+      - image: circleci/postgres:9.5
 
     #### TEMPLATE_NOTE: go expects specific checkout path representing url
     #### expecting it in the form of
     ####   /go/src/github.com/circleci/go-tool
-    ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/github.com/maxdoeck/gatekeeper
     steps:
       - checkout
+      - run: 
+        name: install dockerize
+        command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+        environment:
+          DOCKERIZE_VERSION: v0.3.0
+      - run:
+        name: Wait for db
+        command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      
+      - run: sudo apt-get update
+      - run: sudo apt-get install postgresql-client-9.5
+      - run: whoami
+      - run: psql -U root -d circle_test -f ./db/migrations/setup.sql
+      - run: psql -d $PGURL -c "\dt"
+
 
       # specify any bash command here prefixed with `run: `
       - run: go get -v -t -d ./...
