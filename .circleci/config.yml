@@ -19,7 +19,7 @@ jobs:
     #### TEMPLATE_NOTE: go expects specific checkout path representing url
     #### expecting it in the form of
     ####   /go/src/github.com/circleci/go-tool
-    working_directory: /go/src/github.com/maxdoeck/gatekeeper
+    working_directory: /go/src/github.com/maxdobeck/gatekeeper
     steps:
       - checkout
       - run: 
