@@ -32,7 +32,7 @@ jobs:
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       
       - run: sudo apt-get update
-      - run: sudo apt-get install postgresql-client-9.5
+      - run: sudo apt-get install postgresql-client-9.6
       - run: whoami
       - run: psql -U root -d circle_test -f ./db/migrations/setup.sql
       - run: psql -d $PGURL -c "\dt"
