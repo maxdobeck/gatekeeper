@@ -46,9 +46,11 @@ pipeline {
     stage('Deploy to Dev') {
       when {
         branch 'dev'
+        input message: 'Did you update the database?'
       }
       steps {
         echo 'Ready for deploy to Heroku'
+        input message: 'Did you update the database?'
       }
     }
     stage('Deploy to Prod') {
