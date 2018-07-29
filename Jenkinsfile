@@ -43,15 +43,16 @@ pipeline {
           sh 'cd /go/src/github.com/maxdobeck/gatekeeper && go test ./...'
       }
     }
-    /*stage('Deploy to Dev') {
+    stage('Deploy to Dev') {
       when {
         branch 'dev'
       }
       steps {
         echo 'deploying to heroku for dev test'
+        echo 'ls /go/bin'
       }
     }
-    stage('Deploy to Prod') {
+    /*stage('Deploy to Prod') {
       when {
         branch 'prod'
       }
