@@ -49,7 +49,6 @@ pipeline {
       }
       steps {
         echo 'Ready for deploy to Heroku'
-        sh 'git remote add heroku-test https://git.heroku.com/shielded-stream-75107.git '
         sh 'cd /go/src/github.com/maxdobeck/gatekeeper && git checkout dev && git remote -v && git push heroku-test dev:master'
       }
     }
