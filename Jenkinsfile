@@ -49,6 +49,7 @@ pipeline {
       }
       steps {
         echo 'Ready for deploy to Heroku'
+        sh 'git remote -v'
       }
     }
     /*stage('Deploy to Prod') {
