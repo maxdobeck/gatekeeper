@@ -5,19 +5,20 @@ package models
 	_ "github.com/lib/pq" // github.com/lib/pq
 	"golang.org/x/crypto/bcrypt"
 	"log"
-)
+)*/
 
 // NewMember is the struct for the member signup process
 type NewSchedule struct {
-	Name, Owner string
+	Title, Owner string
 }
 
 // CreateSchedule builds a new schedule with the creator as the Owner
 func CreateSchedule(s *NewSchedule) error {
 
+	return nil
 }
 
-func GetSchedules(ownerId string) {
+/*func GetSchedules(ownerId string) {
 }
 
 func GetSchedule(schduleId string)
