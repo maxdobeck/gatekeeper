@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"log"
 )
 
@@ -23,13 +24,24 @@ func CreateSchedule(s *NewSchedule) error {
 /*func GetSchedules(ownerId string) {
 }
 
-func GetSchedule(schduleId string)
-
-func UpdateScheduleName(scheduleId string) {
+func GetSchedule(schduleId string) {
 
 }
+*/
+// UpdateScheduleTitle will change the title of the specificed schedule
+func UpdateScheduleTitle(scheduleId string, newTitle string) error {
+	_, err := Db.Query("UPDATE schedules SET title = $2 WHERE id = $1", scheduleId, newTitle)
+	if err == sql.ErrNoRows {
+		return err
+	}
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
 
-func DeleteSchedule(scheduleId string) {
+/*func DeleteSchedule(scheduleId string) {
 
 }
 

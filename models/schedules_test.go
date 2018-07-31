@@ -11,7 +11,7 @@ import (
 func TestCreateSchedule(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
-	_, delErr := Db.Query("DELETE FROM members WHERE email like 'Test Schedule'")
+	_, delErr := Db.Query("DELETE FROM schedules WHERE title like 'Test Schedule'")
 	fmt.Println(delErr)
 
 	populateDb()
@@ -55,10 +55,22 @@ func TestCreateSchedule(t *testing.T) {
 }
 
 // TestUpdateTitle will change the Title of a schedule
-func TestUpdateTitle() {
-
+func TestUpdateTitle(t *testing.T) {
+	populateDb()
+	var scheduleId string
+	err := Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&scheduleId)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	updateErr := UpdateScheduleTitle(scheduleId, "New Schedule Title Added")
+	if updateErr != nil {
+		fmt.Println("Failed to update schedule title: ", updateErr)
+		t.Fail()
+	}
 }
 
+// Helper to populate the DB with reliable data
 func populateDb() {
 	m := NewMember{
 		Name:      "Test Member",
@@ -70,5 +82,14 @@ func populateDb() {
 
 	if CreateMember(&m) != nil {
 		fmt.Println("Member may already be there")
+	}
+
+	s := NewSchedule{
+		Title: "Test Test Schedule",
+		Owner: GetMemberID("testtest@gmail.com"),
+	}
+
+	if CreateSchedule(&s) != nil {
+		fmt.Println("Schedule may already exist")
 	}
 }
