@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// TestCreateSchedule will try and create a schedule using an existing user's id
 func TestCreateSchedule(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
@@ -50,6 +51,11 @@ func TestCreateSchedule(t *testing.T) {
 	if record != "Test Schedule" {
 		t.Fail()
 	}
+
+}
+
+// TestUpdateTitle will change the Title of a schedule
+func TestUpdateTitle() {
 
 }
 
