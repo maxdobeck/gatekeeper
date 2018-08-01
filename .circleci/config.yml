@@ -61,13 +61,13 @@ workflows:
   build_test_deploy:
     jobs:
       - build_test
-      - deploy-UAT:
+      - deploy_UAT:
           requires:
             - build_test
           filters:
             branches:
               only: dev
-      - deploy-prod:
+      - deploy_prod:
         requires:
           - build_test
         filters:
