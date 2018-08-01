@@ -46,8 +46,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Deploy Dev to Heroku User Acceptance
+          name: Deploy Dev to Heroku User Acceptance Environment
           command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git dev:master
+  deploy-prod:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - checkout
+      - run:
+          name: Deploy Prod branch to Heroku Production Environment
+          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_PROD_APP_NAME.git prod:master
 workflows:
   version: 2
   build-test-deploy:
@@ -58,5 +66,10 @@ workflows:
             - build-test
           filters:
             branches:
-              only: 
-                - dev
+              only: dev
+      - deploy-prod:
+        requires:
+          - build-test
+        filters:
+          branches:
+            only: prod
