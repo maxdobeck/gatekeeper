@@ -31,7 +31,7 @@ func GetSchedules(memberId string) ([]*Schedule, error) {
 	s := make([]*Schedule, 0)
 	for rows.Next() {
 		var id, title string
-		err := rows.Scan(id, title)
+		err := rows.Scan(&id, &title)
 		if err != nil {
 			log.Println(err)
 			return nil, err
