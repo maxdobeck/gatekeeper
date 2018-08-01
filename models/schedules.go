@@ -6,12 +6,12 @@ import (
 )
 
 // NewMember is the struct for the member signup process
-type NewSchedule struct {
+type Schedule struct {
 	Title, Owner string
 }
 
 // CreateSchedule builds a new schedule with the creator as the Owner
-func CreateSchedule(s *NewSchedule) error {
+func CreateSchedule(s *Schedule) error {
 	_, err := Db.Query("INSERT INTO schedules(title, owner_id) VALUES ($1,$2)", s.Title, s.Owner)
 	if err != nil {
 		log.Println(err)
@@ -22,8 +22,22 @@ func CreateSchedule(s *NewSchedule) error {
 }
 
 /*func GetSchedules(ownerId string) {
-}
+	rows, errors := Db.Query("SELECT id FROM members LIMIT 1;")
+	if errors != nil {
+		log.Println(errors)
+	}
+	defer rows.Close()
+	var memberId string
+	for rows.Next() {
+		err := rows.Scan(&memberId)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(memberId)
+	}
+}*/
 
+/*
 func GetSchedule(schduleId string) {
 
 }

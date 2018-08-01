@@ -30,7 +30,7 @@ func TestCreateSchedule(t *testing.T) {
 		fmt.Println(memberId)
 	}
 
-	s := NewSchedule{
+	s := Schedule{
 		Title: "Test Schedule",
 		Owner: memberId,
 	}
@@ -84,12 +84,15 @@ func populateDb() {
 		fmt.Println("Member may already be there")
 	}
 
-	s := NewSchedule{
-		Title: "Test Test Schedule",
-		Owner: GetMemberID("testtest@gmail.com"),
-	}
+	l := make([]*Schedule, 4)
+	l[0] = &Schedule{"Test Test Schedule", GetMemberID("testtest@gmail.com")}
+	l[1] = &Schedule{"My 2nd Schedule", GetMemberID("testtest@gmail.com")}
+	l[2] = &Schedule{"MY 3rd Schedule", GetMemberID("testtest@gmail.com")}
+	l[3] = &Schedule{"My 4th Schedule", GetMemberID("testtest@gmail.com")}
 
-	if CreateSchedule(&s) != nil {
-		fmt.Println("Schedule may already exist")
+	for i := range l {
+		if CreateSchedule(l[i]) != nil {
+			fmt.Println("Schedule may already exist")
+		}
 	}
 }
