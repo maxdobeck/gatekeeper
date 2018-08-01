@@ -21,21 +21,26 @@ func CreateSchedule(s *Schedule) error {
 	return err
 }
 
-/*func GetSchedules(ownerId string) {
-	rows, errors := Db.Query("SELECT id FROM members LIMIT 1;")
-	if errors != nil {
-		log.Println(errors)
+func GetSchedules(memberId string) ([]*Schedule, error) {
+	rows, err := Db.Query("SELECT id, title FROM schedules WHERE owner_id = $1;", memberId)
+	if err != nil {
+		log.Println(err)
+		return nil, err
 	}
 	defer rows.Close()
-	var memberId string
+	s := make([]*Schedule, 0)
 	for rows.Next() {
-		err := rows.Scan(&memberId)
+		var id, title string
+		err := rows.Scan(id, title)
 		if err != nil {
 			log.Println(err)
+			return nil, err
 		}
-		log.Println(memberId)
+		s = append(s, &Schedule{id, title})
 	}
-}*/
+	log.Println("Array of all schedules owned by: ", memberId, s)
+	return s, err
+}
 
 /*
 func GetSchedule(schduleId string) {

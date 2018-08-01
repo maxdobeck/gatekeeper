@@ -51,8 +51,13 @@ func TestCreateSchedule(t *testing.T) {
 	if record != "Test Schedule" {
 		t.Fail()
 	}
-
+	cleanupDb()
 }
+
+// TestCreateScheduleForNonexistentUser will try and create a schedule for a user (owner) that doesn't exist
+/*TestCreateScheduleForNonexistentUser(t *testing.T) {
+
+}*/
 
 // TestUpdateTitle will change the Title of a schedule
 func TestUpdateTitle(t *testing.T) {
@@ -68,14 +73,32 @@ func TestUpdateTitle(t *testing.T) {
 		fmt.Println("Failed to update schedule title: ", updateErr)
 		t.Fail()
 	}
+	cleanupDb()
+}
+
+// TestGetSchedules trys to get all of a member's schedules
+func TestGetSchedules(t *testing.T) {
+	populateDb()
+	memberId := GetMemberID("testuser33@gmail.com")
+	if memberId == "" {
+		t.Fail()
+	}
+
+	var s []*Schedule
+	s, getAllErr := GetSchedules(memberId)
+	fmt.Println("All schedules: ", s)
+	if getAllErr != nil {
+		t.Fail()
+	}
+	cleanupDb()
 }
 
 // Helper to populate the DB with reliable data
 func populateDb() {
 	m := NewMember{
 		Name:      "Test Member",
-		Email:     "testtest@gmail.com",
-		Email2:    "testtest@gmail.com",
+		Email:     "testuser33@gmail.com",
+		Email2:    "testuser33@gmail.com",
 		Password:  "superduper",
 		Password2: "superduper",
 	}
@@ -85,14 +108,22 @@ func populateDb() {
 	}
 
 	l := make([]*Schedule, 4)
-	l[0] = &Schedule{"Test Test Schedule", GetMemberID("testtest@gmail.com")}
-	l[1] = &Schedule{"My 2nd Schedule", GetMemberID("testtest@gmail.com")}
-	l[2] = &Schedule{"MY 3rd Schedule", GetMemberID("testtest@gmail.com")}
-	l[3] = &Schedule{"My 4th Schedule", GetMemberID("testtest@gmail.com")}
+	l[0] = &Schedule{"Test Test Schedule", GetMemberID("testuser33@gmail.com")}
+	l[1] = &Schedule{"My 2nd Schedule", GetMemberID("testuser33@gmail.com")}
+	l[2] = &Schedule{"MY 3rd Schedule", GetMemberID("testuser33@gmail.com")}
+	l[3] = &Schedule{"My 4th Schedule", GetMemberID("testuser33@gmail.com")}
 
 	for i := range l {
 		if CreateSchedule(l[i]) != nil {
 			fmt.Println("Schedule may already exist")
 		}
+	}
+}
+
+// cleanupDb undoes the populateDb
+func cleanupDb() {
+	_, err := Db.Query("DELETE FROM members WHERE email LIKE 'testuser33@gmail.com'")
+	if err != nil {
+		fmt.Println(err)
 	}
 }
