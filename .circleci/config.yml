@@ -3,7 +3,7 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
-  build_test:
+  build-test:
     docker:
       # specify the version
       - image: circleci/golang:1.10
@@ -40,7 +40,7 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: go get -v -t -d ./...
       - run: go test -v ./...
-  deploy_UAT:
+  deploy-UAT:
     docker:
       - image: buildpack-deps:trusty
     steps:
@@ -48,7 +48,7 @@ jobs:
       - run:
           name: Deploy Dev to Heroku User Acceptance Environment
           command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git dev:master
-  deploy_prod:
+  deploy-prod:
     docker:
       - image: buildpack-deps:trusty
     steps:
@@ -58,18 +58,18 @@ jobs:
           command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_PROD_APP_NAME.git prod:master
 workflows:
   version: 2
-  build_test_deploy:
+  build-test-deploy:
     jobs:
-      - build_test
-      - deploy_UAT:
+      - build-test
+      - deploy-UAT:
           requires:
-            - build_test
+            - build-test
           filters:
             branches:
               only: dev
-      - deploy_prod:
+      -deploy-prod:
         requires:
-          - build_test
+          - build-test
         filters:
           branches:
             only: prod
