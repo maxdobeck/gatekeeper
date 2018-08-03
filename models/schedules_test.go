@@ -104,8 +104,7 @@ func TestGetScheduleById(t *testing.T) {
 		t.Fail()
 	}
 	if schedule.Id != s {
-		fmt.Println("Could not find schedule: ", s)
-		fmt.Println("Rows returned: ", schedule)
+		fmt.Printf("Could not find schedule. %d != %d", s, schedule)
 		t.Fail()
 	}
 	cleanupDb()
