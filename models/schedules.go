@@ -7,7 +7,7 @@ import (
 
 // NewMember is the struct for the member signup process
 type Schedule struct {
-	Title, Owner string
+	Id, Title, Owner string
 }
 
 // CreateSchedule builds a new schedule with the creator as the Owner
@@ -21,32 +21,55 @@ func CreateSchedule(s *Schedule) error {
 	return err
 }
 
-func GetSchedules(memberId string) ([]*Schedule, error) {
-	rows, err := Db.Query("SELECT id, title FROM schedules WHERE owner_id = $1;", memberId)
+func GetSchedules(memberId string) ([]Schedule, error) {
+	rows, err := Db.Query("SELECT id, title, owner_id FROM schedules WHERE owner_id = $1;", memberId)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
-	s := make([]*Schedule, 0)
+	s := make([]Schedule, 0)
 	for rows.Next() {
-		var id, title string
-		err := rows.Scan(&id, &title)
+		var id, title, owner_id string
+		err := rows.Scan(&id, &title, &owner_id)
 		if err != nil {
 			log.Println(err)
 			return nil, err
 		}
-		s = append(s, &Schedule{id, title})
+		s = append(s, Schedule{id, title, owner_id})
 	}
 	log.Println("Array of all schedules owned by: ", memberId, s)
 	return s, err
 }
 
-/*
-func GetSchedule(schduleId string) {
-
+// GetScheduleById will obtain the schedule based on the Schedule Id
+func GetScheduleById(scheduleId string) (Schedule, error) {
+	var s Schedule
+	row, err := Db.Query("SELECT id, title, owner_id FROM schedules WHERE owner_id = $1;", scheduleId)
+	if err != nil {
+		log.Println(err)
+		return s, err
+	}
+	if err == sql.ErrNoRows {
+		log.Println("No record found for: ", scheduleId)
+		return s, err
+	}
+	defer row.Close()
+	for row.Next() {
+		var id, title, owner_id string
+		err := row.Scan(&id, &title, &owner_id)
+		if err != nil {
+			log.Println(err)
+			return s, err
+		}
+		s.Title = title
+		s.Owner = owner_id
+		s.Id = id
+	}
+	log.Println("Schedule found: ", s)
+	return s, err
 }
-*/
+
 // UpdateScheduleTitle will change the title of the specificed schedule
 func UpdateScheduleTitle(scheduleId string, newTitle string) error {
 	_, err := Db.Query("UPDATE schedules SET title = $2 WHERE id = $1", scheduleId, newTitle)

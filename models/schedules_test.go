@@ -84,10 +84,28 @@ func TestGetSchedules(t *testing.T) {
 		t.Fail()
 	}
 
-	var s []*Schedule
+	var s []Schedule
 	s, getAllErr := GetSchedules(memberId)
-	fmt.Println("All schedules: ", s)
 	if getAllErr != nil {
+		fmt.Println("All schedules: ", s)
+		t.Fail()
+	}
+	cleanupDb()
+}
+
+// TestGetScheduleById attempts to get a schedule by the ID of the schedule
+func TestGetScheduleById(t *testing.T) {
+	populateDb()
+	var s string
+	err := Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&s)
+	schedule, err := GetScheduleById(s)
+	if err != nil {
+		fmt.Println("Could not find schedule: ", s)
+		t.Fail()
+	}
+	if schedule.Id != s {
+		fmt.Println("Could not find schedule: ", s)
+		fmt.Println("Rows returned: ", schedule)
 		t.Fail()
 	}
 	cleanupDb()
@@ -102,16 +120,15 @@ func populateDb() {
 		Password:  "superduper",
 		Password2: "superduper",
 	}
-
 	if CreateMember(&m) != nil {
 		fmt.Println("Member may already be there")
 	}
 
 	l := make([]*Schedule, 4)
-	l[0] = &Schedule{"Test Test Schedule", GetMemberID("testuser33@gmail.com")}
-	l[1] = &Schedule{"My 2nd Schedule", GetMemberID("testuser33@gmail.com")}
-	l[2] = &Schedule{"MY 3rd Schedule", GetMemberID("testuser33@gmail.com")}
-	l[3] = &Schedule{"My 4th Schedule", GetMemberID("testuser33@gmail.com")}
+	l[0] = &Schedule{"", "Test Test Schedule", GetMemberID("testuser33@gmail.com")}
+	l[1] = &Schedule{"", "My 2nd Schedule", GetMemberID("testuser33@gmail.com")}
+	l[2] = &Schedule{"", "My 3rd Schedule", GetMemberID("testuser33@gmail.com")}
+	l[3] = &Schedule{"", "My 4th Schedule", GetMemberID("testuser33@gmail.com")}
 
 	for i := range l {
 		if CreateSchedule(l[i]) != nil {
