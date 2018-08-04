@@ -21,6 +21,7 @@ func CreateSchedule(s *Schedule) error {
 	return err
 }
 
+// GetSchedules gets all schedules based on the provided member id
 func GetSchedules(memberId string) ([]Schedule, error) {
 	rows, err := Db.Query("SELECT id, title, owner_id FROM schedules WHERE owner_id = $1;", memberId)
 	if err != nil {
@@ -42,10 +43,10 @@ func GetSchedules(memberId string) ([]Schedule, error) {
 	return s, err
 }
 
-// GetScheduleById will obtain the schedule based on the Schedule Id
+// GetScheduleById will obtain the schedule based on the provided schedule id
 func GetScheduleById(scheduleId string) (Schedule, error) {
 	var s Schedule
-	row, err := Db.Query("SELECT id, title, owner_id FROM schedules WHERE owner_id = $1;", scheduleId)
+	row, err := Db.Query("SELECT id, title, owner_id FROM schedules WHERE id = $1;", scheduleId)
 	if err != nil {
 		log.Println(err)
 		return s, err
@@ -58,7 +59,7 @@ func GetScheduleById(scheduleId string) (Schedule, error) {
 	for row.Next() {
 		var id, title, owner_id string
 		err := row.Scan(&id, &title, &owner_id)
-		if err != nil {
+		if err != nil || id != scheduleId {
 			log.Println(err)
 			return s, err
 		}
