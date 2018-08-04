@@ -56,7 +56,6 @@ func TestCreateSchedule(t *testing.T) {
 
 // TestCreateScheduleForNonexistentUser will try and create a schedule for a user (owner) that doesn't exist
 /*TestCreateScheduleForNonexistentUser(t *testing.T) {
-
 }*/
 
 // TestUpdateTitle will change the Title of a schedule
@@ -98,6 +97,10 @@ func TestGetScheduleById(t *testing.T) {
 	populateDb()
 	var s string
 	err := Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&s)
+	if err != nil {
+		fmt.Println("Could not find schedule: ", s)
+		t.Fail()
+	}
 	schedule, err := GetScheduleById(s)
 	if err != nil {
 		fmt.Println("Could not find schedule: ", s)
@@ -110,7 +113,24 @@ func TestGetScheduleById(t *testing.T) {
 	cleanupDb()
 }
 
-// Helper to populate the DB with reliable data
+func TestDeleteSchedule(t *testing.T) {
+	populateDb()
+	var s string
+	var err error
+	err = Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&s)
+	if err != nil {
+		fmt.Println("Could not find a schedule to test on")
+		t.Fail()
+	}
+	err = DeleteSchedule(s)
+	if err != nil {
+		fmt.Println("Could not delete schedule: ", s)
+		t.Fail()
+	}
+	cleanupDb()
+}
+
+// Helpers
 func populateDb() {
 	m := NewMember{
 		Name:      "Test Member",

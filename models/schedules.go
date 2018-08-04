@@ -84,12 +84,18 @@ func UpdateScheduleTitle(scheduleId string, newTitle string) error {
 	return nil
 }
 
-/*func DeleteSchedule(scheduleId string) {
-
+// DeleteSchedule will delete a schedule based on the id of the schedule
+func DeleteSchedule(scheduleId string) error {
+	_, err := Db.Query("DELETE FROM schedules WHERE id = $1;", scheduleId)
+	if err != nil {
+		log.Println("Schedule could not be deleted by id: ", scheduleId)
+		return err
+	}
+	log.Println("Schedule deleted: ", scheduleId)
+	return nil
 }
 
-// Generate a link like google does with sheets or docs https://docs.google.com/spreadsheets/d/1Qm_7-QB9eZJBjK_mESb6Oy1kVzAiJgCp_rPp3c1zHrI/edit#gid=0
+/*// Generate a link like google does with sheets or docs https://docs.google.com/spreadsheets/d/1Qm_7-QB9eZJBjK_mESb6Oy1kVzAiJgCp_rPp3c1zHrI/edit#gid=0
 func generateShareLink() error {
-
 }
 */
