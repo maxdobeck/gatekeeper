@@ -1,6 +1,7 @@
 package schedules
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/maxdobeck/gatekeeper/models"
 	"net/http"
@@ -10,13 +11,27 @@ import (
 	"testing"
 )
 
+type newScheduleBody struct {
+	Title    string `json:"title"`
+	Owner_id string `json:"owner_id"`
+}
+
 // TestCreateNewSchedule tries to create a new schedule
 func TestCreateNewSchedule(t *testing.T) {
 	connStr := os.Getenv("PGURL")
 	models.ConnToDB(connStr)
-	populateDb()
+	m := populateDb()
 	// Create the schedule
-	rbody := strings.NewReader(`{"title": "Night Shift at Paddys", "owner_id": }`)
+	s := newScheduleBody{
+		Title:    "Night Shift at Paddys",
+		Owner_id: models.GetMemberID(m.Email),
+	}
+	b, jsonErr := json.Marshal(s)
+	if jsonErr != nil {
+		fmt.Println(jsonErr)
+		t.Fail()
+	}
+	rbody := strings.NewReader(string(b))
 	req, rErr := http.NewRequest("POST", "/schedules", rbody)
 	if rErr != nil {
 		fmt.Println("Problem creating new schedule: ", rErr)
@@ -24,38 +39,20 @@ func TestCreateNewSchedule(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 	NewSchedule(w, req)
+	res := ResDetails{}
+	json.Unmarshal([]byte(w.Body.String()), &res)
+	var expectedMessage [1]string
+	expectedMessage[0] = "Schedule created: Night Shift at Paddys"
+	if res.Status != expectedMessage[0] {
+		t.Error("The Schedule 'Night Shift at Paddys' was not created!")
+		t.Fail()
+	}
 
 	cleanupDb()
-	/*
-		// Signup a user
-		signupBody := strings.NewReader(`{"email": "testValidCreds@gmail.com", "email2":"testValidCreds@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Valid User Signup"}`)
-		signupReq, signupErr := http.NewRequest("POST", "/members", signupBody)
-		if signupErr != nil {
-			t.Fail()
-		}
-		wSignup := httptest.NewRecorder()
-		SignupMember(wSignup, signupReq)
-
-		fmt.Println("Now try and sign up user with same email")
-		dupBody := strings.NewReader(`{"email": "testValidCreds@gmail.com", "email2":"testValidCreds@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Valid User Signup"}`)
-		dupReq, dupSignupErr := http.NewRequest("POST", "/members", dupBody)
-		if dupSignupErr != nil {
-			t.Fail()
-		}
-		//Signup same member again
-		wSignup2 := httptest.NewRecorder()
-		SignupMember(wSignup2, dupReq)
-		actualRes := memberSignup{}
-		json.Unmarshal([]byte(wSignup2.Body.String()), &actualRes)
-		var expectedRes [1]string
-		expectedRes[0] = "Email is already in use."
-		if actualRes.Errors[0] != expectedRes[0] {
-			t.Error("SignupMember allowed a duplicate email through.", wSignup2.Body)
-		} */
 }
 
 // Helpers
-func populateDb() {
+func populateDb() models.NewMember {
 	m := models.NewMember{
 		Name:      "Frank",
 		Email:     "frank@paddys.com",
@@ -78,6 +75,7 @@ func populateDb() {
 			fmt.Println("Schedule may already exist")
 		}
 	}
+	return m
 }
 
 // cleanupDb undoes the populateDb

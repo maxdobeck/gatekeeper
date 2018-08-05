@@ -11,6 +11,7 @@ import (
 type ResDetails struct {
 	Status  string
 	Message []string
+	Errors  []string
 }
 
 // CreateSchedule is used to make a new schedule
