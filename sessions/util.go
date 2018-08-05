@@ -32,7 +32,9 @@ func GoodSession(r *http.Request) bool {
 
 	// Check if user is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		log.Println("Stale session rejected: ", session)
 		return false
 	}
+	log.Println("Session OK: ", session)
 	return true
 }
