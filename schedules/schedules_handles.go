@@ -8,15 +8,15 @@ import (
 	"net/http"
 )
 
-type resDetails struct {
+type ResDetails struct {
 	Status  string
 	Message []string
 }
 
 // CreateSchedule is used to make a new schedule
-func CreateSchedule(w http.ResponseWriter, r *http.Request) {
+func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	if sessions.GoodSession(r) != true {
-		msg := resDetails{
+		msg := ResDetails{
 			Status:  "Expired session or cookie",
 			Message: []string{"Session Expired.  Log out and log back in."},
 		}
