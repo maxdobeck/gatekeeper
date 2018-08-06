@@ -12,8 +12,8 @@ import (
 )
 
 type newScheduleBody struct {
-	Title    string `json:"title"`
-	Owner_id string `json:"owner_id"`
+	Title   string `json:"Title"`
+	OwnerID string `json:"OwnerID"`
 }
 
 // TestCreateNewSchedule tries to create a new schedule
@@ -23,8 +23,8 @@ func TestCreateNewSchedule(t *testing.T) {
 	m := populateDb()
 	// Create the schedule
 	s := newScheduleBody{
-		Title:    "Night Shift at Paddys",
-		Owner_id: models.GetMemberID(m.Email),
+		Title:   "Night Shift at Paddys",
+		OwnerID: models.GetMemberID(m.Email),
 	}
 	b, jsonErr := json.Marshal(s)
 	if jsonErr != nil {
@@ -44,10 +44,10 @@ func TestCreateNewSchedule(t *testing.T) {
 	var expectedMessage [1]string
 	expectedMessage[0] = "Schedule created: Night Shift at Paddys"
 	if res.Status != expectedMessage[0] {
-		t.Error("The Schedule 'Night Shift at Paddys' was not created!")
+		fmt.Println("Errors: ", res.Errors)
+		fmt.Printf("The Schedule '%s' was not created!\n", s.Title)
 		t.Fail()
 	}
-
 	cleanupDb()
 }
 
@@ -71,7 +71,8 @@ func populateDb() models.NewMember {
 	l[3] = &models.Schedule{"", "My 4th Schedule", models.GetMemberID(m.Email)}
 
 	for i := range l {
-		if models.CreateSchedule(l[i]) != nil {
+		err := models.CreateSchedule(l[i])
+		if err != nil {
 			fmt.Println("Schedule may already exist")
 		}
 	}
