@@ -31,8 +31,8 @@ func TestCreateSchedule(t *testing.T) {
 	}
 
 	s := Schedule{
-		Title: "Test Schedule",
-		Owner: memberId,
+		Title:   "Test Schedule",
+		OwnerID: memberId,
 	}
 
 	var newScheduleError error

@@ -7,12 +7,12 @@ import (
 
 // NewMember is the struct for the member signup process
 type Schedule struct {
-	Id, Title, Owner string
+	Id, Title, OwnerID string
 }
 
 // CreateSchedule builds a new schedule with the creator as the Owner
 func CreateSchedule(s *Schedule) error {
-	_, err := Db.Query("INSERT INTO schedules(title, owner_id) VALUES ($1,$2)", s.Title, s.Owner)
+	_, err := Db.Query("INSERT INTO schedules(title, owner_id) VALUES ($1,$2)", s.Title, s.OwnerID)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -64,7 +64,7 @@ func GetScheduleById(scheduleId string) (Schedule, error) {
 			return s, err
 		}
 		s.Title = title
-		s.Owner = owner_id
+		s.OwnerID = owner_id
 		s.Id = id
 	}
 	log.Println("Schedule found: ", s)

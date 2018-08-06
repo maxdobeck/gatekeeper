@@ -2,26 +2,52 @@
 package schedules
 
 import (
-	// "github.com/maxdobeck/gatekeeper/models"
 	"encoding/json"
+	"fmt"
+	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/sessions"
+	"log"
 	"net/http"
 )
 
+// ResDetails contains the response status, messages, and any errors
 type ResDetails struct {
 	Status  string
-	Message []string
+	Message string
 	Errors  []string
 }
 
-// CreateSchedule is used to make a new schedule
+// NewSchedule is used to make a new schedule
 func NewSchedule(w http.ResponseWriter, r *http.Request) {
+	var newScheduleErrors []string
 	if sessions.GoodSession(r) != true {
 		msg := ResDetails{
 			Status:  "Expired session or cookie",
-			Message: []string{"Session Expired.  Log out and log back in."},
+			Message: "Session Expired.  Log out and log back in.",
 		}
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
+	var s models.Schedule
+	// var errors []string
+	err := json.NewDecoder(r.Body).Decode(&s)
+	if err != nil {
+		log.Println("Problem decoding incoming Schedule", err)
+	}
+	scheduleErr := models.CreateSchedule(&s)
+	if scheduleErr != nil {
+		log.Println("Problem making schedule: ", scheduleErr, s)
+		newScheduleErrors = append(newScheduleErrors, fmt.Sprintf("Error creating schedule %s", scheduleErr))
+		msg := ResDetails{
+			Status:  fmt.Sprintf("Problem creating schedule: %s", s.Title),
+			Message: fmt.Sprintf("Error: %s", scheduleErr),
+			Errors:  newScheduleErrors,
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	msg := ResDetails{
+		Status: fmt.Sprintf("Schedule created: %s", s.Title),
+	}
+	json.NewEncoder(w).Encode(msg)
 }

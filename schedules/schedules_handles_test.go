@@ -3,6 +3,7 @@ package schedules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/models"
 	"net/http"
 	"net/http/httptest"
@@ -31,20 +32,32 @@ func TestCreateNewSchedule(t *testing.T) {
 		fmt.Println(jsonErr)
 		t.Fail()
 	}
+
+	// Login to start a session
+	loginBody := strings.NewReader(`{"email": "frank@paddys.com", "password": "superduper"}`)
+	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
+	if loginErr != nil {
+		t.Fail()
+	}
+	wLogin := httptest.NewRecorder()
+	authentication.Login(wLogin, loginReq)
+
 	rbody := strings.NewReader(string(b))
 	req, rErr := http.NewRequest("POST", "/schedules", rbody)
 	if rErr != nil {
-		fmt.Println("Problem creating new schedule: ", rErr)
+		fmt.Println("Problem creating new request: ", rErr)
 		t.Fail()
 	}
+	// Add the cookie from the newly created session to the request
+	req.AddCookie(wLogin.Result().Cookies()[0])
 	w := httptest.NewRecorder()
 	NewSchedule(w, req)
 	res := ResDetails{}
 	json.Unmarshal([]byte(w.Body.String()), &res)
 	var expectedMessage [1]string
-	expectedMessage[0] = "Schedule created: Night Shift at Paddys"
+	expectedMessage[0] = fmt.Sprintf("Schedule created: %s", s.Title)
 	if res.Status != expectedMessage[0] {
-		fmt.Println("Errors: ", res.Errors)
+		fmt.Println("Response Status: ", res.Status)
 		fmt.Printf("The Schedule '%s' was not created!\n", s.Title)
 		t.Fail()
 	}
