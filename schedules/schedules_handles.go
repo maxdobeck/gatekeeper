@@ -51,3 +51,20 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(msg)
 }
+
+/*
+// Delete schedule by specified ID if owner made request
+func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// Find Schedule based on the specified schedule ID
+func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// Find All Schedules based on member ID
+func FindScheduleByOwner(w http.ResponseWriter, r *http.Request) {
+
+}
+*/

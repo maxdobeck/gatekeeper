@@ -70,6 +70,9 @@ func main() {
 	r.HandleFunc("/members/{id}/name", members.UpdateMemberName).Methods("PUT")
 	// Schedules CRUD routes
 	r.HandleFunc("/schedules", schedules.NewSchedule).Methods("POST")
+	// r.HandleFunc("/schedules/{id}", schedules.FindScheduleByID).Methods("GET")
+	// r.HandleFunc("/schedules/owner/{id}", schedules.FindScheduleByOwner).Methods("GET")
+	// r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)

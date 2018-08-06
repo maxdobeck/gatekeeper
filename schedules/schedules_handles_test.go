@@ -64,6 +64,32 @@ func TestCreateNewSchedule(t *testing.T) {
 	cleanupDb()
 }
 
+// Update the specified Schedule's Title
+/*func TestUpdateScheduleTitle(t *testing.T) {
+
+}
+
+// Delete the specified schedule
+func TestDeleteSchedule(t *testing.T) {
+
+}
+
+// Find all schedules owned by the specified member
+func TestGetScheduleByOwner(t *testing.T) {
+
+}
+
+// Find a schedule based on the specified ID
+func TestGetScheduleByID(t *testing.T) {
+
+}
+
+// Try and find a schedule that doesn't exist ensure proper error is returned
+func TestGetNonexistentScheduleByID(t *test.T) {
+
+}
+*/
+
 // Helpers
 func populateDb() models.NewMember {
 	m := models.NewMember{
