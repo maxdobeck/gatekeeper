@@ -8,6 +8,7 @@ import (
 	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/members"
 	"github.com/maxdobeck/gatekeeper/models"
+	"github.com/maxdobeck/gatekeeper/schedules"
 	"github.com/maxdobeck/gatekeeper/sessions"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
@@ -67,6 +68,8 @@ func main() {
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
 	r.HandleFunc("/members/{id}/email", members.UpdateMemberEmail).Methods("PUT")
 	r.HandleFunc("/members/{id}/name", members.UpdateMemberName).Methods("PUT")
+	// Schedules CRUD routes
+	r.HandleFunc("/schedules", schedules.NewSchedule).Methods("POST")
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
