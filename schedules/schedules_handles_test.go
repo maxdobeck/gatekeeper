@@ -66,9 +66,35 @@ func TestCreateNewSchedule(t *testing.T) {
 }
 
 // Update the specified Schedule's Title
-/*func TestUpdateScheduleTitle(t *testing.T) {
+func TestUpdateScheduleTitle(t *testing.T) {
+	connStr := os.Getenv("PGURL")
+	models.ConnToDB(connStr)
+	m := populateDb()
+	var targetID = "17wrong-id-type"
+	// Login to grab a valid session cookie
+	loginBody := strings.NewReader(`{"email": "frank@paddys.com", "password": "superduper"}`)
+	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
+	if loginErr != nil {
+		t.Fail()
+	}
+	wLogin := httptest.NewRecorder()
+	authentication.Login(wLogin, loginReq)
+	req, rErr := http.NewRequest("GET", "/schedules/owners"+models.GetMemberID(m.Email), nil)
+	if rErr != nil {
+		fmt.Println("Problem creating new request: ", rErr)
+		t.Fail()
+	}
+	// Add the cookie from the newly created session to the request
+	req.AddCookie(wLogin.Result().Cookies()[0])
 
+	// Setup a router and test the handle
+	w := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/schedules/{id}", UpdateScheduleTitle)
+	router.ServeHTTP(w, req)
 }
+
+/*
 
 // Delete the specified schedule
 func TestDeleteSchedule(t *testing.T) {

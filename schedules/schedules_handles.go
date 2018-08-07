@@ -64,6 +64,10 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 }
 */
 
+func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
+
+}
+
 // Find Schedule based on the specified schedule ID
 func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 
