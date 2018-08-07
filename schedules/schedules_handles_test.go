@@ -3,6 +3,7 @@ package schedules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/models"
 	"net/http"
@@ -72,11 +73,43 @@ func TestCreateNewSchedule(t *testing.T) {
 // Delete the specified schedule
 func TestDeleteSchedule(t *testing.T) {
 
-}
+}*/
 
 // Find all schedules owned by the specified member
-func TestGetScheduleByOwner(t *testing.T) {
+func TestFindScheduleByOwner(t *testing.T) {
+	connStr := os.Getenv("PGURL")
+	models.ConnToDB(connStr)
+	m := populateDb()
 
+	// Login to start a session
+	loginBody := strings.NewReader(`{"email": "frank@paddys.com", "password": "superduper"}`)
+	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
+	if loginErr != nil {
+		t.Fail()
+	}
+	wLogin := httptest.NewRecorder()
+	authentication.Login(wLogin, loginReq)
+	req, rErr := http.NewRequest("GET", "/schedules/owners"+models.GetMemberID(m.Email), nil)
+	if rErr != nil {
+		fmt.Println("Problem creating new request: ", rErr)
+		t.Fail()
+	}
+	// Add the cookie from the newly created session to the request
+	req.AddCookie(wLogin.Result().Cookies()[0])
+
+	// Setup a router and test the handle
+	w := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/schedules/owner/{id}", FindScheduleByOwner)
+	router.ServeHTTP(w, req)
+
+	res := Payload{}
+	json.Unmarshal([]byte(w.Body.String()), &res)
+	if len(res.FoundSchedules) < 4 {
+		t.Error("Not all four schedules were found.")
+		t.Fail()
+	}
+	cleanupDb()
 }
 
 // Find a schedule based on the specified ID
@@ -84,6 +117,7 @@ func TestGetScheduleByID(t *testing.T) {
 
 }
 
+/*
 // Try and find a schedule that doesn't exist ensure proper error is returned
 func TestGetNonexistentScheduleByID(t *test.T) {
 

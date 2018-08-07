@@ -17,6 +17,11 @@ type ResDetails struct {
 	Errors  []string
 }
 
+type Payload struct {
+	ResDetails
+	FoundSchedules []models.Schedule
+}
+
 // NewSchedule is used to make a new schedule
 func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	var newScheduleErrors []string
@@ -62,9 +67,8 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 
 }
-
+*/
 // Find All Schedules based on member ID
 func FindScheduleByOwner(w http.ResponseWriter, r *http.Request) {
 
 }
-*/
