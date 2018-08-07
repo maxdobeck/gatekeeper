@@ -62,12 +62,13 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 
 }
+*/
 
 // Find Schedule based on the specified schedule ID
 func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 
 }
-*/
+
 // Find All Schedules based on member ID
 func FindScheduleByOwner(w http.ResponseWriter, r *http.Request) {
 

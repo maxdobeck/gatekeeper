@@ -114,7 +114,47 @@ func TestFindScheduleByOwner(t *testing.T) {
 
 // Find a schedule based on the specified ID
 func TestGetScheduleByID(t *testing.T) {
+	connStr := os.Getenv("PGURL")
+	models.ConnToDB(connStr)
+	m := populateDb()
+	var targetID string
+	findErr := models.Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&targetID)
+	if findErr != nil {
+		t.Error("Problem finding a schedule in the database.")
+	}
+	// Login to grab a valid session cookie
+	loginBody := strings.NewReader(`{"email": "frank@paddys.com", "password": "superduper"}`)
+	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
+	if loginErr != nil {
+		t.Fail()
+	}
+	wLogin := httptest.NewRecorder()
+	authentication.Login(wLogin, loginReq)
+	req, rErr := http.NewRequest("GET", "/schedules/owners"+models.GetMemberID(m.Email), nil)
+	if rErr != nil {
+		fmt.Println("Problem creating new request: ", rErr)
+		t.Fail()
+	}
+	// Add the cookie from the newly created session to the request
+	req.AddCookie(wLogin.Result().Cookies()[0])
 
+	// Setup a router and test the handle
+	w := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/schedules/{id}", FindScheduleByID)
+	router.ServeHTTP(w, req)
+
+	res := Payload{}
+	json.Unmarshal([]byte(w.Body.String()), &res)
+	if len(res.FoundSchedules) < 1 {
+		t.Error("No schedules were returned in the payload")
+		t.Fail()
+	}
+	if res.ResDetails.Status != "schedule found" {
+		t.Errorf("The schedule %s could not be found", targetID)
+	}
+
+	cleanupDb()
 }
 
 /*
