@@ -59,7 +59,25 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 
 // Delete schedule by specified ID if owner made request
 func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
-
+	if sessions.GoodSession(r) != true {
+		msg := ResDetails{
+			Status:  "Expired session or cookie",
+			Message: "Session Expired.  Log out and log back in.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	// Check that current user is allowed to delete the schedule (They are the owner)
+	curUser := sessions.CookieMemberID(r)
+	if curUser == "Error" {
+		log.Println("Problem getting member ID from cookie.  Log in and log out.")
+	}
+	log.Println("Current user ID: ", curUser)
+	msg := ResDetails{
+		Status:  "OK",
+		Message: "Schedule deleted",
+	}
+	json.NewEncoder(w).Encode(msg)
 }
 
 func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {

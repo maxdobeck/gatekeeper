@@ -87,6 +87,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-CSRF-Token", csrf.Token(r))
 	// Set cookie values and save
 	session.Values["authenticated"] = true
+	session.Values["memberID"] = m.ID
 	if err = session.Save(r, w); err != nil {
 		log.Printf("Error saving session: %v", err)
 	}

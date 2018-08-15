@@ -107,7 +107,7 @@ func TestUpdateScheduleTitle(t *testing.T) {
 		t.Error("Error updating Schdule Title")
 		t.Fail()
 	}
-	if res.ResDetails.Message != "Title Updated: New Schedule Title." {
+	if res.ResDetails.Message != "Title Updated: New Schedule Title" {
 		t.Errorf("The shedule %s could not be deleted ", scheduleID)
 		t.Fail()
 	}

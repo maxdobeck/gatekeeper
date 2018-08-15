@@ -38,3 +38,22 @@ func GoodSession(r *http.Request) bool {
 	log.Println("Session OK: ", session)
 	return true
 }
+
+func CookieMemberID(r *http.Request) string {
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), key)
+	check(err)
+	defer store.Close()
+
+	session, err := store.Get(r, "scheduler-session")
+	check(err)
+
+	var memberID string
+	cookieData, ok := session.Values["memberID"].(string)
+	if ok == true {
+		memberID = cookieData
+	}
+	if ok != true {
+		memberID = "Error"
+	}
+	return memberID
+}
