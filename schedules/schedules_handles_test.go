@@ -66,7 +66,7 @@ func TestCreateNewSchedule(t *testing.T) {
 }
 
 // Update the specified Schedule's Title
-func TestUpdateScheduleTitle(t *testing.T) {
+/*func TestUpdateScheduleTitle(t *testing.T) {
 	connStr := os.Getenv("PGURL")
 	models.ConnToDB(connStr)
 	m := populateDb()
@@ -92,14 +92,52 @@ func TestUpdateScheduleTitle(t *testing.T) {
 	router := mux.NewRouter()
 	router.HandleFunc("/schedules/{id}", UpdateScheduleTitle)
 	router.ServeHTTP(w, req)
-}
-
-/*
+	cleanupDb()
+}*/
 
 // Delete the specified schedule
 func TestDeleteSchedule(t *testing.T) {
+	connStr := os.Getenv("PGURL")
+	models.ConnToDB(connStr)
+	m := populateDb()
+	ownerID := models.GetMemberID(m.Email)
+	var scheduleID string
 
-}*/
+	findErr := models.Db.QueryRow("SELECT id FROM schedules WHERE owner_id = $1 LIMIT 1", ownerID).Scan(&scheduleID)
+	if findErr != nil {
+		t.Errorf("The shedule %s could not be found ", scheduleID)
+	}
+
+	// Login to start a session
+	loginBody := strings.NewReader(`{"email": "frank@paddys.com", "password": "superduper"}`)
+	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
+	if loginErr != nil {
+		t.Fail()
+	}
+	wLogin := httptest.NewRecorder()
+	authentication.Login(wLogin, loginReq)
+	// Build the request to test
+	req, rErr := http.NewRequest("DELETE", "/schedules/"+scheduleID, nil)
+	if rErr != nil {
+		fmt.Println("Problem creating new request: ", rErr)
+		t.Fail()
+	}
+	// Add the cookie from the newly created session to the request
+	req.AddCookie(wLogin.Result().Cookies()[0])
+	// Setup a router and test the handle
+	w := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/schedules/{id}", DeleteScheduleByID)
+	router.ServeHTTP(w, req)
+
+	res := Payload{}
+	json.Unmarshal([]byte(w.Body.String()), &res)
+	if res.ResDetails.Message != "Schedule Deleted" {
+		t.Errorf("The shedule %s could not be deleted ", scheduleID)
+		t.Fail()
+	}
+	cleanupDb()
+}
 
 // Find all schedules owned by the specified member
 func TestFindScheduleByOwner(t *testing.T) {

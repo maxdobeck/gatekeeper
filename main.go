@@ -68,6 +68,7 @@ func main() {
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
 	r.HandleFunc("/members/{id}/email", members.UpdateMemberEmail).Methods("PUT")
 	r.HandleFunc("/members/{id}/name", members.UpdateMemberName).Methods("PUT")
+	// r.HandleFunc("/members/{id}", members.DeleteMember).Methods("DELETE")
 	// Schedules CRUD routes
 	r.HandleFunc("/schedules", schedules.NewSchedule).Methods("POST")
 	// r.HandleFunc("/schedules/{id}", schedules.FindScheduleByID).Methods("GET")

@@ -57,12 +57,10 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(msg)
 }
 
-/*
 // Delete schedule by specified ID if owner made request
 func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 
 }
-*/
 
 func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 
