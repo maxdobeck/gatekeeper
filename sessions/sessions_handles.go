@@ -52,6 +52,7 @@ func CurMember(w http.ResponseWriter, r *http.Request) {
 			Status:  "Expired session or cookie",
 			Message: "Session Expired.  Log out and log back in.",
 		}
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
@@ -59,6 +60,8 @@ func CurMember(w http.ResponseWriter, r *http.Request) {
 	if memberID == "Error" {
 		log.Println("No valid value in cookie.  Log out and log back in.")
 		// resDetails should have the error for the client here
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 	name := models.GetMemberName(memberID)
 	email := models.GetMemberEmail(memberID)
