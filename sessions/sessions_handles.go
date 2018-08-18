@@ -9,20 +9,20 @@ import (
 )
 
 type resDetails struct {
-	Status  string
-	Message string
-	Errors  []string
+	Status  string   `json:"status"`
+	Message string   `json:"message"`
+	Errors  []string `json:"errors"`
 }
 
 type curMember struct {
-	Name  string
-	Email string
-	ID    string
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	ID    string `json:"id"`
 }
 
 type Payload struct {
-	resDetails
-	curMember
+	resDetails `json:"details"`
+	curMember  `json:"member"`
 }
 
 // CsrfToken will generate a CSRF Token
@@ -64,4 +64,15 @@ func CurMember(w http.ResponseWriter, r *http.Request) {
 	email := models.GetMemberEmail(memberID)
 	member := curMember{Name: name, Email: email, ID: memberID}
 	log.Println("Current member based on cookie: ", member)
+
+	msgDetails := resDetails{
+		Status:  "OK",
+		Message: "Member found",
+	}
+	msg := Payload{
+		resDetails: msgDetails,
+		curMember:  member,
+	}
+	log.Println("Payload for /CurMember: ", msg)
+	json.NewEncoder(w).Encode(msg)
 }
