@@ -74,5 +74,6 @@ func CurMember(w http.ResponseWriter, r *http.Request) {
 		curMember:  member,
 	}
 	log.Println("Payload for /CurMember: ", msg)
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(msg)
 }
