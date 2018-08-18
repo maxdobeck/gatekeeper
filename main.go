@@ -64,6 +64,7 @@ func main() {
 	r.HandleFunc("/logout", authentication.Logout).Methods("POST")
 	// Session Routes
 	r.HandleFunc("/validsession", sessions.ValidSession).Methods("GET")
+	r.HandleFunc("/curmember", sessions.CurMember).Methods("GET")
 	// Member CRUD routes
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
 	r.HandleFunc("/members/{id}/email", members.UpdateMemberEmail).Methods("PUT")

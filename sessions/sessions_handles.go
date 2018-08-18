@@ -1,10 +1,29 @@
 package sessions
 
 import (
+	"encoding/json"
 	"github.com/gorilla/csrf"
+	"github.com/maxdobeck/gatekeeper/models"
 	"log"
 	"net/http"
 )
+
+type resDetails struct {
+	Status  string
+	Message string
+	Errors  []string
+}
+
+type curMember struct {
+	Name  string
+	Email string
+	ID    string
+}
+
+type Payload struct {
+	resDetails
+	curMember
+}
 
 // CsrfToken will generate a CSRF Token
 func CsrfToken(w http.ResponseWriter, r *http.Request) {
@@ -22,4 +41,27 @@ func ValidSession(w http.ResponseWriter, r *http.Request) {
 		log.Println("Session is good.")
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+/* CurMember returns the currently logged in user's info for the client to consume.
+It will check that the session is valid and reuturn a payload containing the member's info
+based on the cookie values */
+func CurMember(w http.ResponseWriter, r *http.Request) {
+	if GoodSession(r) != true {
+		msg := resDetails{
+			Status:  "Expired session or cookie",
+			Message: "Session Expired.  Log out and log back in.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	memberID := CookieMemberID(r)
+	if memberID == "Error" {
+		log.Println("No valid value in cookie.  Log out and log back in.")
+		// resDetails should have the error for the client here
+	}
+	name := models.GetMemberName(memberID)
+	email := models.GetMemberEmail(memberID)
+	member := curMember{Name: name, Email: email, ID: memberID}
+	log.Println("Current member based on cookie: ", member)
 }
