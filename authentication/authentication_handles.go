@@ -108,6 +108,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	check(err)
 	// Revoke users authentication
 	session.Values["authenticated"] = false
+	w.WriteHeader(http.StatusOK)
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 }
