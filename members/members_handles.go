@@ -91,6 +91,7 @@ func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var msg resDetails
+	// Use mux to get the Variables from the URL
 	vars := mux.Vars(r)
 	if vars["id"] == "" {
 		log.Println("Unexpected URL:", r.URL)
@@ -130,10 +131,10 @@ func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(msg)
 		}
 	}
-
-	log.Println("Path Variables: ", vars)
-	log.Println("Member's ID: ", vars["id"])
-	log.Println(msg)
+	// Per mux router docs
+	// log.Println("Path Variables: ", vars)
+	// log.Println("Member's ID: ", vars["id"])
+	// log.Println(msg)
 }
 
 // UpdateMemberName will update the existing member name for authorized sessions

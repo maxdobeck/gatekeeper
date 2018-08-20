@@ -151,8 +151,8 @@ func TestDeleteSchedule(t *testing.T) {
 
 	res := Payload{}
 	json.Unmarshal([]byte(w.Body.String()), &res)
-	if res.ResDetails.Message != "Schedule Deleted" {
-		t.Errorf("The shedule %s could not be deleted ", scheduleID)
+	if res.ResDetails.Message != "Schedule deleted" {
+		t.Errorf("The schedule %s could not be deleted ", scheduleID)
 		t.Fail()
 	}
 	cleanupDb()
@@ -183,7 +183,7 @@ func TestFindSchedulesByOwner(t *testing.T) {
 	// Setup a router and test the handle
 	w := httptest.NewRecorder()
 	router := mux.NewRouter()
-	router.HandleFunc("/schedules/owner/{id}", FindScheduleByOwner)
+	router.HandleFunc("/schedules/owner/{id}", FindSchedulesByOwner)
 	router.ServeHTTP(w, req)
 
 	res := Payload{}
@@ -306,7 +306,7 @@ func populateDb() models.NewMember {
 	for i := range l {
 		err := models.CreateSchedule(l[i])
 		if err != nil {
-			fmt.Println("Schedule may already exist")
+			fmt.Println("Schedule may already exist and you should be able to ignore any errors about duplicate keys.")
 		}
 	}
 	return m

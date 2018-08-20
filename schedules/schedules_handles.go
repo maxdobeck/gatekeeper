@@ -4,6 +4,7 @@ package schedules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/sessions"
 	"log"
@@ -68,12 +69,43 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
-	// Check that current user is allowed to delete the schedule (They are the owner)
+	vars := mux.Vars(r)
+	log.Println(vars["id"])
+
 	curUser := sessions.CookieMemberID(r)
 	if curUser == "Error" {
 		log.Println("Problem getting member ID from cookie.  Log in and log out.")
 	}
-	log.Println("Current user ID: ", curUser)
+	// Check that current user is allowed to delete the schedule
+	// (that the cookie session for the logged in user == the schedule owner)
+	schedule, sErr := models.GetScheduleById(vars["id"])
+	if sErr != nil {
+		log.Println("Problem finding schedule: ", vars["id"])
+		msg := ResDetails{
+			Status:  "Could not find schedule.",
+			Message: "Schedule does not exist.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	if curUser != schedule.OwnerID {
+		msg := ResDetails{
+			Status:  "Not Authorized",
+			Message: "You are not the owner of this schedule.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	log.Printf("User %s is deleting schedule %s.", curUser, vars["id"])
+	delErr := models.DeleteSchedule(vars["id"])
+	if delErr != nil {
+		msg := ResDetails{
+			Status:  "Error deleting schedule",
+			Message: delErr.Error(),
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
 	msg := ResDetails{
 		Status:  "OK",
 		Message: "Schedule deleted",
