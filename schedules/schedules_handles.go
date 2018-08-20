@@ -34,6 +34,7 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var s models.Schedule
+	// Check that the owner ID matches the cookie's ID. (I.E. check that the user really is who they say they are)
 	// var errors []string
 	err := json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
