@@ -87,7 +87,7 @@ func TestUpdateScheduleTitle(t *testing.T) {
 	wLogin := httptest.NewRecorder()
 	authentication.Login(wLogin, loginReq)
 	// Build the request to test
-	body := strings.NewReader(`{"title": "New Schedule Title"}`)
+	body := strings.NewReader(`{"newtitle": "New Schedule Title"}`)
 	req, rErr := http.NewRequest("PATCH", "/schedules/"+scheduleID+"/title", body)
 	if rErr != nil {
 		fmt.Println("Problem creating new request: ", rErr)
@@ -98,17 +98,18 @@ func TestUpdateScheduleTitle(t *testing.T) {
 	// Setup a router and test the handle
 	w := httptest.NewRecorder()
 	router := mux.NewRouter()
-	router.HandleFunc("/schedules/{id}", DeleteScheduleByID)
+	router.HandleFunc("/schedules/{id}/title", UpdateScheduleTitle)
 	router.ServeHTTP(w, req)
 
-	res := Payload{}
+	res := ResDetails{}
 	json.Unmarshal([]byte(w.Body.String()), &res)
-	if res.ResDetails.Status != "Title Updated" {
-		t.Error("Error updating Schdule Title")
+	if res.Status != "OK" {
+		t.Error("Error updating Schedule Title")
 		t.Fail()
 	}
-	if res.ResDetails.Message != "Title Updated: New Schedule Title" {
-		t.Errorf("The shedule %s could not be deleted ", scheduleID)
+	if res.Message != "Title Updated: New Schedule Title" {
+		t.Errorf("Actual Response: %s", res)
+		t.Errorf("The schedule: %s title was not updated.", scheduleID)
 		t.Fail()
 	}
 	cleanupDb()
@@ -124,7 +125,7 @@ func TestDeleteSchedule(t *testing.T) {
 
 	findErr := models.Db.QueryRow("SELECT id FROM schedules WHERE owner_id = $1 LIMIT 1", ownerID).Scan(&scheduleID)
 	if findErr != nil {
-		t.Errorf("The shedule %s could not be found ", scheduleID)
+		t.Errorf("The schedule %s could not be found ", scheduleID)
 	}
 
 	// Login to start a session
@@ -235,7 +236,7 @@ func TestFindScheduleByID(t *testing.T) {
 		t.Error("No schedules were returned in the payload")
 		t.Fail()
 	}
-	if res.ResDetails.Status != "schedule found" {
+	if res.ResDetails.Status != "Schedule found" {
 		t.Errorf("The schedule %s could not be found", targetID)
 	}
 

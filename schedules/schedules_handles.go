@@ -23,6 +23,10 @@ type Payload struct {
 	FoundSchedules []models.Schedule
 }
 
+type updateSchedule struct {
+	NewTitle string
+}
+
 // NewSchedule is used to make a new schedule
 func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	var newScheduleErrors []string
@@ -114,7 +118,82 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
+	if sessions.GoodSession(r) != true {
+		msg := ResDetails{
+			Status:  "Expired session or cookie",
+			Message: "Session Expired.  Log out and log back in.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	// Get the variable from the url with mux
+	vars := mux.Vars(r)
+	if vars["id"] == "" {
+		var msg ResDetails
+		log.Println("Unexpected URL:", r.URL)
+		msg.Status = "Error"
+		msg.Message = "Bad id for schedule."
+		msg.Errors = append(msg.Errors, "Path is unexpected.  Resource not found.")
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	curUser := sessions.CookieMemberID(r)
+	if curUser == "Error" {
+		log.Println("Problem getting member ID from cookie.  Log in and log out.")
+		msg := ResDetails{
+			Status:  "Expired session or cookie",
+			Message: "Problem with session.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	// Check that current user is allowed to touch the schedule
+	// (that the cookie session for the logged in user == the schedule owner)
+	schedule, sErr := models.GetScheduleById(vars["id"])
+	if sErr != nil {
+		log.Println("Problem finding schedule: ", vars["id"])
+		msg := ResDetails{
+			Status:  "Could not find schedule.",
+			Message: "Schedule does not exist.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	if curUser != schedule.OwnerID {
+		msg := ResDetails{
+			Status:  "Not Authorized",
+			Message: "You are not the owner of this schedule.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
 
+	var titleUpdate updateSchedule
+	err := json.NewDecoder(r.Body).Decode(&titleUpdate)
+	if err != nil {
+		log.Println("Error decoding body >>", err)
+		msg := ResDetails{
+			Status:  "Error.",
+			Message: "Error decoding body.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	log.Printf("User %s is updating schedule %s with new title: %s", curUser, vars["id"], titleUpdate.NewTitle)
+	updateErr := models.UpdateScheduleTitle(vars["id"], titleUpdate.NewTitle)
+	if updateErr != nil {
+		msg := ResDetails{
+			Status:  "Error changing schedule title.",
+			Message: updateErr.Error(),
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	msg := ResDetails{
+		Status:  "OK",
+		Message: fmt.Sprintf("Title Updated: %s", titleUpdate.NewTitle),
+	}
+	json.NewEncoder(w).Encode(msg)
 }
 
 // Find Schedule based on the specified schedule ID
