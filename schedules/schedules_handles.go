@@ -198,10 +198,84 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 
 // Find Schedule based on the specified schedule ID
 func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
-
+	if sessions.GoodSession(r) != true {
+		msg := ResDetails{
+			Status:  "Expired session or cookie",
+			Message: "Session Expired.  Log out and log back in.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	// Get the variable from the url with mux
+	vars := mux.Vars(r)
+	if vars["id"] == "" {
+		var msg ResDetails
+		log.Println("Unexpected URL:", r.URL)
+		msg.Status = "Error"
+		msg.Message = "Bad id for schedule."
+		msg.Errors = append(msg.Errors, "Path is unexpected.  Resource not found.")
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	schedule, sErr := models.GetScheduleById(vars["id"])
+	if sErr != nil {
+		log.Println("Problem finding schedule: ", vars["id"])
+		msg := ResDetails{
+			Status:  "Could not find schedule.",
+			Message: "Schedule does not exist or could not be found.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	msg := Payload{}
+	msg.FoundSchedules = append(msg.FoundSchedules, schedule)
+	details := ResDetails{
+		Status:  "OK",
+		Message: "Schedule Found",
+	}
+	msg.ResDetails = details
+	json.NewEncoder(w).Encode(msg)
 }
 
 // Find All Schedules based on member ID
 func FindSchedulesByOwner(w http.ResponseWriter, r *http.Request) {
-
+	if sessions.GoodSession(r) != true {
+		msg := ResDetails{
+			Status:  "Expired session or cookie",
+			Message: "Session Expired.  Log out and log back in.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	// Get the variable from the url with mux
+	vars := mux.Vars(r)
+	if vars["id"] == "" {
+		var msg ResDetails
+		log.Println("Unexpected URL:", r.URL)
+		msg.Status = "Error"
+		msg.Message = "Bad id for member."
+		msg.Errors = append(msg.Errors, "Path is unexpected.  Resource not found.")
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	schedules, sErr := models.GetSchedules(vars["id"])
+	if sErr != nil {
+		log.Println("Problem finding schedule: ", vars["id"])
+		msg := ResDetails{
+			Status:  "Could not find schedule.",
+			Message: "Schedule does not exist or could not be found.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	msg := Payload{}
+	msg.FoundSchedules = schedules
+	log.Println("Schedules found: ", schedules)
+	details := ResDetails{
+		Status:  "OK",
+		Message: "Schedule Found",
+	}
+	msg.ResDetails = details
+	log.Println("Payload from Finding Schedule by Onwer: ", msg)
+	json.NewEncoder(w).Encode(msg)
 }

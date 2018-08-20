@@ -173,7 +173,8 @@ func TestFindSchedulesByOwner(t *testing.T) {
 	}
 	wLogin := httptest.NewRecorder()
 	authentication.Login(wLogin, loginReq)
-	req, rErr := http.NewRequest("GET", "/schedules/owners"+models.GetMemberID(m.Email), nil)
+	memberID := models.GetMemberID(m.Email)
+	req, rErr := http.NewRequest("GET", "/schedules/owner/"+memberID, nil)
 	if rErr != nil {
 		fmt.Println("Problem creating new request: ", rErr)
 		t.Fail()
@@ -190,6 +191,7 @@ func TestFindSchedulesByOwner(t *testing.T) {
 	res := Payload{}
 	json.Unmarshal([]byte(w.Body.String()), &res)
 	if len(res.FoundSchedules) < 4 {
+		t.Errorf("Actual res: %s", res)
 		t.Error("Not all four schedules were found.")
 		t.Fail()
 	}
@@ -236,7 +238,7 @@ func TestFindScheduleByID(t *testing.T) {
 		t.Error("No schedules were returned in the payload")
 		t.Fail()
 	}
-	if res.ResDetails.Status != "Schedule found" {
+	if res.ResDetails.Status != "OK" {
 		t.Errorf("The schedule %s could not be found", targetID)
 	}
 
