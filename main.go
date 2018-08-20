@@ -73,7 +73,7 @@ func main() {
 	// Schedules CRUD routes
 	r.HandleFunc("/schedules", schedules.NewSchedule).Methods("POST")
 	// r.HandleFunc("/schedules/{id}", schedules.FindScheduleByID).Methods("GET")
-	// r.HandleFunc("/schedules/owners/{id}", schedules.FindScheduleByOwner).Methods("GET")
+	// r.HandleFunc("/schedules/owners/{id}", schedules.FindSchedulesByOwner).Methods("GET")
 	// r.HandleFunc("/schedules/{id}/title", schedules.UpdateScheduleTitle).Methods("PATCH")
 	// r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
 	// Middleware

@@ -91,6 +91,6 @@ func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // Find All Schedules based on member ID
-func FindScheduleByOwner(w http.ResponseWriter, r *http.Request) {
+func FindSchedulesByOwner(w http.ResponseWriter, r *http.Request) {
 
 }

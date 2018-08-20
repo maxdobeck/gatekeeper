@@ -159,7 +159,7 @@ func TestDeleteSchedule(t *testing.T) {
 }
 
 // Find all schedules owned by the specified member
-func TestFindScheduleByOwner(t *testing.T) {
+func TestFindSchedulesByOwner(t *testing.T) {
 	connStr := os.Getenv("PGURL")
 	models.ConnToDB(connStr)
 	m := populateDb()
