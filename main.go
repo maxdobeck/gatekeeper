@@ -76,6 +76,7 @@ func main() {
 	r.HandleFunc("/schedules/owner/{id}", schedules.FindSchedulesByOwner).Methods("GET")
 	r.HandleFunc("/schedules/{id}/title", schedules.UpdateScheduleTitle).Methods("PATCH")
 	r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
+
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
