@@ -57,7 +57,7 @@ func TestCreateNewSchedule(t *testing.T) {
 	json.Unmarshal([]byte(w.Body.String()), &res)
 	var expectedMessage [1]string
 	expectedMessage[0] = fmt.Sprintf("Schedule created: %s", s.Title)
-	if res.Status != expectedMessage[0] {
+	if res.Message != expectedMessage[0] {
 		fmt.Println("Response Status: ", res.Status)
 		fmt.Printf("The Schedule '%s' was not created!\n", s.Title)
 		t.Fail()
