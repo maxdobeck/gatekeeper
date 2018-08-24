@@ -232,10 +232,10 @@ func TestFindScheduleByID(t *testing.T) {
 	router.HandleFunc("/schedules/{id}", FindScheduleByID)
 	router.ServeHTTP(w, req)
 
-	res := Payload{}
+	res := SinglePayload{}
 	json.Unmarshal([]byte(w.Body.String()), &res)
-	if len(res.FoundSchedules) < 1 {
-		t.Error("No schedules were returned in the payload")
+	if res.FoundSchedule.Id != targetID {
+		t.Error("Bad schedule was returned in the payload")
 		t.Fail()
 	}
 	if res.ResDetails.Status != "OK" {
