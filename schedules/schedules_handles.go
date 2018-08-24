@@ -45,6 +45,16 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Problem decoding incoming Schedule", err)
 	}
+	if s.Title == "" {
+		msg := ResDetails{
+			Status:  fmt.Sprintf("Problem creating schedule: %s", s.Title),
+			Message: fmt.Sprintf("Error: %s", "Schedule Title Cannot be empty"),
+			Errors:  append(newScheduleErrors, fmt.Sprintf("Schedule Title Cannot be empty")),
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+		log.Println("Schedule cannot be empty", err)
+	}
 	scheduleErr := models.CreateSchedule(&s)
 	if scheduleErr != nil {
 		log.Println("Problem making schedule: ", scheduleErr, s)
@@ -58,7 +68,8 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	msg := ResDetails{
-		Status: fmt.Sprintf("Schedule created: %s", s.Title),
+		Status:  "OK",
+		Message: fmt.Sprintf("Schedule created: %s", s.Title),
 	}
 	json.NewEncoder(w).Encode(msg)
 }
