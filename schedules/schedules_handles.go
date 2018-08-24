@@ -23,6 +23,12 @@ type Payload struct {
 	FoundSchedules []models.Schedule
 }
 
+// This should probably be an interface for payload
+type SinglePayload struct {
+	ResDetails
+	FoundSchedule models.Schedule
+}
+
 type updateSchedule struct {
 	NewTitle string
 }
@@ -238,8 +244,17 @@ func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
-	msg := Payload{}
-	msg.FoundSchedules = append(msg.FoundSchedules, schedule)
+	curUser := sessions.CookieMemberID(r)
+	if curUser != schedule.OwnerID {
+		msg := ResDetails{
+			Status:  "Not Authorized",
+			Message: "You are not the owner of this schedule.",
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	msg := SinglePayload{}
+	msg.FoundSchedule = schedule
 	details := ResDetails{
 		Status:  "OK",
 		Message: "Schedule Found",
