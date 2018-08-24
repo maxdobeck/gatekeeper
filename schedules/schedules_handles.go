@@ -97,8 +97,6 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 	if curUser == "Error" {
 		log.Println("Problem getting member ID from cookie.  Log in and log out.")
 	}
-	// Check that current user is allowed to delete the schedule
-	// (that the cookie session for the logged in user == the schedule owner)
 	schedule, sErr := models.GetScheduleById(vars["id"])
 	if sErr != nil {
 		log.Println("Problem finding schedule: ", vars["id"])
@@ -109,6 +107,8 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
+	// Check that current user is allowed to delete the schedule
+	// (that the cookie session for the logged in user == the schedule owner)
 	if curUser != schedule.OwnerID {
 		msg := ResDetails{
 			Status:  "Not Authorized",
@@ -302,6 +302,6 @@ func FindSchedulesByOwner(w http.ResponseWriter, r *http.Request) {
 		Message: "Schedule Found",
 	}
 	msg.ResDetails = details
-	log.Println("Payload from Finding Schedule by Onwer: ", msg)
+	log.Println("Payload from Finding Schedule by Owner: ", msg)
 	json.NewEncoder(w).Encode(msg)
 }
