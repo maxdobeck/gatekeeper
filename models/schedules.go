@@ -95,7 +95,8 @@ func DeleteSchedule(scheduleId string) error {
 	return nil
 }
 
-/*// Generate a link like google does with sheets or docs https://docs.google.com/spreadsheets/d/1Qm_7-QB9eZJBjK_mESb6Oy1kVzAiJgCp_rPp3c1zHrI/edit#gid=0
+/*// Generate a link like google does with sheets or docs
+like so: https://docs.google.com/spreadsheets/d/1Qm_7-QB9eZJBjK_mESb6Oy1kVzAiJgCp_rPp3c1zHrI/edit#gid=0
 func generateShareLink() error {
 }
 */

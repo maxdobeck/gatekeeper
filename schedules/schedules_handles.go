@@ -135,6 +135,7 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
+	var updateErrors []string
 	if sessions.GoodSession(r) != true {
 		msg := ResDetails{
 			Status:  "Expired session or cookie",
@@ -184,7 +185,6 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
-
 	var titleUpdate updateSchedule
 	err := json.NewDecoder(r.Body).Decode(&titleUpdate)
 	if err != nil {
@@ -195,6 +195,17 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 		}
 		json.NewEncoder(w).Encode(msg)
 		return
+	}
+	if titleUpdate.NewTitle == "" {
+		updateErrors = append(updateErrors, fmt.Sprintf("Schedule Title Cannot be empty"))
+		msg := ResDetails{
+			Status:  fmt.Sprintf("Problem updating schedule"),
+			Message: fmt.Sprintf("Error: %s", "Schedule Title Cannot be empty"),
+			Errors:  updateErrors,
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+		log.Println("Schedule cannot be empty", err)
 	}
 	log.Printf("User %s is updating schedule %s with new title: %s", curUser, vars["id"], titleUpdate.NewTitle)
 	updateErr := models.UpdateScheduleTitle(vars["id"], titleUpdate.NewTitle)
