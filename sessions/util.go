@@ -12,7 +12,6 @@ import (
 var (
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
 	key = []byte("super-secret-key")
-	// store = sessions.NewCookieStore(key)
 )
 
 func check(err error) {
@@ -32,7 +31,28 @@ func GoodSession(r *http.Request) bool {
 
 	// Check if user is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		log.Println("Stale session rejected: ", session)
 		return false
 	}
+	log.Println("Session OK: ", session)
 	return true
+}
+
+func CookieMemberID(r *http.Request) string {
+	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), key)
+	check(err)
+	defer store.Close()
+
+	session, err := store.Get(r, "scheduler-session")
+	check(err)
+
+	var memberID string
+	cookieData, ok := session.Values["memberID"].(string)
+	if ok == true {
+		memberID = cookieData
+	}
+	if ok != true {
+		memberID = "Error"
+	}
+	return memberID
 }

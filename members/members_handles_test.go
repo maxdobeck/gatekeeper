@@ -71,7 +71,7 @@ func TestChangeMemberEmail(t *testing.T) {
 		fmt.Println(delErr)
 
 	}
-
+	// Build the request body for the Signup
 	signupBody := strings.NewReader(`{"email": "someEmail@gmail.com", "email2":"someEmail@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Standard Signup"}`)
 	signupReq, signupErr := http.NewRequest("POST", "/members", signupBody)
 	if signupErr != nil {

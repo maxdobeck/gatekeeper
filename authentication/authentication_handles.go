@@ -47,7 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	var domain string
 	if os.Getenv("GO_ENV") == "dev" {
-		domain = "127.0.0.1:3000"
+		domain = "http://localhost:3000"
 	} else if os.Getenv("GO_ENV") == "test" {
 		domain = "http://s3-sih-test.s3-website-us-west-1.amazonaws.com"
 	} else if os.Getenv("GO_ENV") == "prod" {
@@ -87,6 +87,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-CSRF-Token", csrf.Token(r))
 	// Set cookie values and save
 	session.Values["authenticated"] = true
+	session.Values["memberID"] = m.ID
 	if err = session.Save(r, w); err != nil {
 		log.Printf("Error saving session: %v", err)
 	}
@@ -107,6 +108,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	check(err)
 	// Revoke users authentication
 	session.Values["authenticated"] = false
+	w.WriteHeader(http.StatusOK)
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 }

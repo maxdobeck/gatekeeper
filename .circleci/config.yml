@@ -1,0 +1,75 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build-test:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.10
+        environment:
+          PGURL: postgresql://root@localhost/circle_test?sslmode=disable
+          GO_ENV: dev
+      
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/postgres:9.5
+
+    #### TEMPLATE_NOTE: go expects specific checkout path representing url
+    #### expecting it in the form of
+    ####   /go/src/github.com/circleci/go-tool
+    working_directory: /go/src/github.com/maxdobeck/gatekeeper
+    steps:
+      - checkout
+      - run: 
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      
+      - run: sudo apt-get update
+      - run: sudo apt-get install postgresql-client-9.6
+      - run: whoami
+      - run: psql -d $PGURL -f ./db/migrations/setup.sql
+      - run: psql -d $PGURL -c "\dt"
+
+      # specify any bash command here prefixed with `run: `
+      - run: go get -v -t -d ./...
+      - run: go test -v ./...
+  deploy-UAT:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - checkout
+      - run:
+          name: Deploy Dev to Heroku User Acceptance Environment
+          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git dev:master
+  deploy-prod:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - checkout
+      - run:
+          name: Deploy Prod branch to Heroku Production Environment
+          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_PROD_APP_NAME.git prod:master
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build-test
+      - deploy-UAT:
+          requires:
+            - build-test
+          filters:
+            branches:
+              only: dev
+      - deploy-prod:
+          requires:
+            - build-test
+          filters:
+            branches:
+              only: prod
