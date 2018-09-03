@@ -8,6 +8,7 @@ import (
 	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/members"
 	"github.com/maxdobeck/gatekeeper/models"
+	"github.com/maxdobeck/gatekeeper/schedules"
 	"github.com/maxdobeck/gatekeeper/sessions"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
@@ -32,7 +33,7 @@ func main() {
 
 	var allowedDomains []string // need env variables for this
 	if os.Getenv("GO_ENV") == "dev" {
-		allowedDomains = []string{"http://127.0.0.1:3000", "http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:3050"}
+		allowedDomains = []string{"127.0.0.1:3000", "http://localhost:3000", "127.0.0.1:3000", "127.0.0.1:3050"}
 	} else if os.Getenv("GO_ENV") == "test" {
 		allowedDomains = []string{"http://s3-sih-test.s3-website-us-west-1.amazonaws.com"}
 	} else if os.Getenv("GO_ENV") == "prod" {
@@ -48,7 +49,7 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   allowedDomains,
-		AllowedMethods:   []string{"PUT", "POST", "GET"},
+		AllowedMethods:   []string{"PUT", "POST", "PATCH", "DELETE", "GET"},
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"X-CSRF-Token"},
 		ExposedHeaders:   []string{"X-CSRF-Token"},
@@ -60,13 +61,22 @@ func main() {
 	// Authentication Routes
 	r.HandleFunc("/csrftoken", sessions.CsrfToken).Methods("GET")
 	r.HandleFunc("/login", authentication.Login).Methods("POST")
-	r.HandleFunc("/logout", authentication.Logout).Methods("POST")
+	r.HandleFunc("/logout", authentication.Logout).Methods("DELETE")
 	// Session Routes
 	r.HandleFunc("/validsession", sessions.ValidSession).Methods("GET")
+	r.HandleFunc("/curmember", sessions.CurMember).Methods("GET")
 	// Member CRUD routes
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
 	r.HandleFunc("/members/{id}/email", members.UpdateMemberEmail).Methods("PUT")
 	r.HandleFunc("/members/{id}/name", members.UpdateMemberName).Methods("PUT")
+	// r.HandleFunc("/members/{id}", members.DeleteMember).Methods("DELETE")
+	// Schedules CRUD routes
+	r.HandleFunc("/schedules", schedules.NewSchedule).Methods("POST")
+	r.HandleFunc("/schedules/{id}", schedules.FindScheduleByID).Methods("GET")
+	r.HandleFunc("/schedules/owner/{id}", schedules.FindSchedulesByOwner).Methods("GET")
+	r.HandleFunc("/schedules/{id}/title", schedules.UpdateScheduleTitle).Methods("PATCH")
+	r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
+
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)

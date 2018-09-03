@@ -57,6 +57,19 @@ func GetMemberName(id string) (name string) {
 	return name
 }
 
+// GetMemberEmail grabs the email of the member using the id
+func GetMemberEmail(id string) (email string) {
+	sqlErr := Db.QueryRow("SELECT email FROM members WHERE id =$1", id).Scan(&email)
+	if sqlErr == sql.ErrNoRows {
+		email = ""
+		return
+	}
+	if sqlErr != nil {
+		log.Println(sqlErr)
+	}
+	return email
+}
+
 // UpdateMemberName uses the member ID to insert a new name
 func UpdateMemberName(id string, name string) bool {
 	_, sqlErr := Db.Query("UPDATE members SET name = $2 WHERE id = $1", id, name)
