@@ -47,15 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	var domain string
 	if os.Getenv("GO_ENV") == "dev" {
-<<<<<<< HEAD:authentication/authentication_handles.go
-<<<<<<< HEAD:authentication/authentication_handles.go
 		domain = "http://localhost:3000"
-=======
-		domain = "127.0.0.1:3000"
->>>>>>> prod:authentication/handles.go
-=======
-		domain = "127.0.0.1:3000"
->>>>>>> prod:authentication/handles.go
 	} else if os.Getenv("GO_ENV") == "test" {
 		domain = "http://s3-sih-test.s3-website-us-west-1.amazonaws.com"
 	} else if os.Getenv("GO_ENV") == "prod" {
