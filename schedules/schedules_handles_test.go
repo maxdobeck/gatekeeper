@@ -301,10 +301,10 @@ func populateDb() models.NewMember {
 	}
 
 	l := make([]*models.Schedule, 4)
-	l[0] = &models.Schedule{"", "Test Test Schedule", models.GetMemberID(m.Email)}
-	l[1] = &models.Schedule{"", "My 2nd Schedule", models.GetMemberID(m.Email)}
-	l[2] = &models.Schedule{"", "My 3rd Schedule", models.GetMemberID(m.Email)}
-	l[3] = &models.Schedule{"", "My 4th Schedule", models.GetMemberID(m.Email)}
+	l[0] = &models.Schedule{Id: "", Title: "Test Test Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[1] = &models.Schedule{Id: "", Title: "My 2nd Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[2] = &models.Schedule{Id: "", Title: "My 3rd Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[3] = &models.Schedule{Id: "", Title: "My 4th Schedule", OwnerID: models.GetMemberID(m.Email)}
 
 	for i := range l {
 		err := models.CreateSchedule(l[i])
