@@ -35,7 +35,7 @@ func main() {
 	if os.Getenv("GO_ENV") == "dev" {
 		allowedDomains = []string{"127.0.0.1:3000", "http://localhost:3000", "127.0.0.1:3000", "127.0.0.1:3050"}
 	} else if os.Getenv("GO_ENV") == "test" {
-		allowedDomains = []string{"http://s3-sih-test.s3-website-us-west-1.amazonaws.com"}
+		allowedDomains = []string{"https://s3-sih-test.s3-website-us-west-1.amazonaws.com"}
 	} else if os.Getenv("GO_ENV") == "prod" {
 		allowedDomains = []string{"https://schedulingishard.com", "https://www.schedulingishard.com"}
 	}
@@ -65,18 +65,19 @@ func main() {
 	// Session Routes
 	r.HandleFunc("/validsession", sessions.ValidSession).Methods("GET")
 	r.HandleFunc("/curmember", sessions.CurMember).Methods("GET")
-	// Member CRUD routes
+	// Member CRUD Routes
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
 	r.HandleFunc("/members/{id}/email", members.UpdateMemberEmail).Methods("PUT")
 	r.HandleFunc("/members/{id}/name", members.UpdateMemberName).Methods("PUT")
 	// r.HandleFunc("/members/{id}", members.DeleteMember).Methods("DELETE")
-	// Schedules CRUD routes
+	// Schedules CRUD Routes
 	r.HandleFunc("/schedules", schedules.NewSchedule).Methods("POST")
 	r.HandleFunc("/schedules/{id}", schedules.FindScheduleByID).Methods("GET")
 	r.HandleFunc("/schedules/owner/{id}", schedules.FindSchedulesByOwner).Methods("GET")
 	r.HandleFunc("/schedules/{id}/title", schedules.UpdateScheduleTitle).Methods("PATCH")
 	r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
-
+	// Shifts Routes
+	// r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.NewShift).Methods("POST")
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
