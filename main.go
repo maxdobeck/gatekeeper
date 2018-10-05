@@ -77,7 +77,11 @@ func main() {
 	r.HandleFunc("/schedules/{id}/title", schedules.UpdateScheduleTitle).Methods("PATCH")
 	r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
 	// Shifts Routes
-	// r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.NewShift).Methods("POST")
+	//  r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.NewShift).Methods("POST")
+	//  r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.GetShifts).Methods("GET")
+	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Get).Methods("GET")
+	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Delete).Methods("DELETE")
+	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Update).Methods("PATCH")
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
