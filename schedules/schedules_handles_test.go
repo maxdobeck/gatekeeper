@@ -234,7 +234,7 @@ func TestFindScheduleByID(t *testing.T) {
 
 	res := SinglePayload{}
 	json.Unmarshal([]byte(w.Body.String()), &res)
-	if res.FoundSchedule.Id != targetID {
+	if res.FoundSchedule.ID != targetID {
 		t.Error("Bad schedule was returned in the payload")
 		t.Fail()
 	}
@@ -301,10 +301,10 @@ func populateDb() models.NewMember {
 	}
 
 	l := make([]*models.Schedule, 4)
-	l[0] = &models.Schedule{Id: "", Title: "Test Test Schedule", OwnerID: models.GetMemberID(m.Email)}
-	l[1] = &models.Schedule{Id: "", Title: "My 2nd Schedule", OwnerID: models.GetMemberID(m.Email)}
-	l[2] = &models.Schedule{Id: "", Title: "My 3rd Schedule", OwnerID: models.GetMemberID(m.Email)}
-	l[3] = &models.Schedule{Id: "", Title: "My 4th Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[0] = &models.Schedule{ID: "", Title: "Test Test Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[1] = &models.Schedule{ID: "", Title: "My 2nd Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[2] = &models.Schedule{ID: "", Title: "My 3rd Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[3] = &models.Schedule{ID: "", Title: "My 4th Schedule", OwnerID: models.GetMemberID(m.Email)}
 
 	for i := range l {
 		err := models.CreateSchedule(l[i])

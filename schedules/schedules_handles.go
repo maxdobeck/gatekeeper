@@ -97,7 +97,7 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 	if curUser == "Error" {
 		log.Println("Problem getting member ID from cookie.  Log in and log out.")
 	}
-	schedule, sErr := models.GetScheduleById(vars["id"])
+	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
 		log.Println("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
@@ -168,7 +168,7 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	}
 	// Check that current user is allowed to touch the schedule
 	// (that the cookie session for the logged in user == the schedule owner)
-	schedule, sErr := models.GetScheduleById(vars["id"])
+	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
 		log.Println("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
@@ -245,7 +245,7 @@ func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
-	schedule, sErr := models.GetScheduleById(vars["id"])
+	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
 		log.Println("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
