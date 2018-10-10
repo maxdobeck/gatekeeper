@@ -101,12 +101,12 @@ func TestGetScheduleById(t *testing.T) {
 		fmt.Println("Could not find schedule: ", s)
 		t.Fail()
 	}
-	schedule, err := GetScheduleById(s)
+	schedule, err := GetScheduleByID(s)
 	if err != nil {
 		fmt.Println("Could not find schedule: ", s)
 		t.Fail()
 	}
-	if schedule.Id != s {
+	if schedule.ID != s {
 		fmt.Printf("Could not find schedule. Target schedule id %s != record from DB %s", s, schedule)
 		t.Fail()
 	}
