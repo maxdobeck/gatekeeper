@@ -20,3 +20,19 @@ CREATE TABLE IF NOT EXISTS enrollments(
 	id uuid PRIMARY KEY DEFAULT uuid_generate_v4()
 );
 
+CREATE TABLE IF NOT EXISTS shifts(
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  schedule_id uuid REFERENCES schedules(id) ON DELETE CASCADE,
+  title text CONSTRAINT title_present NOT NULL,
+  min_enrollees integer DEFAULT 0;
+  start_time text CONSTRAINT start_time_present NOT NULL,
+  end_time text CONSTRAINT end_time_present NOT NULL,
+  stop_date text DEFAULT "2099-01-01",
+  sun boolean DEFAULT FALSE,
+  mon boolean DEFAULT FALSE,
+  tue boolean DEFAULT FALSE,
+  wed boolean DEFAULT FALSE,
+  thu boolean DEFAULT FALSE,
+  fri boolean DEFAULT FALSE,
+  sat boolean DEFAULT FALSE
+);
