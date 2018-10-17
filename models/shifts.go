@@ -6,8 +6,8 @@ import (
 
 // Shift contains the core values
 type Shift struct {
-	Title, Start, End, Stop, minEnrollees, Schedule string
-	Days                                            []string
+	ID, Title, Start, End, Stop, minEnrollees, Schedule string
+	Days                                                []string
 }
 
 // CreateShift builds a new schedule with the creator as the Owner

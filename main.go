@@ -10,6 +10,7 @@ import (
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/schedules"
 	"github.com/maxdobeck/gatekeeper/sessions"
+	"github.com/maxdobeck/gatekeeper/shifts"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 	"log"
@@ -77,7 +78,7 @@ func main() {
 	r.HandleFunc("/schedules/{id}/title", schedules.UpdateScheduleTitle).Methods("PATCH")
 	r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
 	// Shifts Routes
-	//  r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.New).Methods("POST")
+	r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.New).Methods("POST")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.GetShifts).Methods("GET")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Get).Methods("GET")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Delete).Methods("DELETE")

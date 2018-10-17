@@ -2,6 +2,7 @@ package shifts
 
 import (
 	"encoding/json"
+	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest"
 	"github.com/maxdobeck/gatekeeper/sessions"
 	"log"
@@ -19,5 +20,18 @@ func New(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
-	log.Println("Creating new shift: ")
+
+	var s models.Shift
+	err := json.NewDecoder(r.Body).Decode(&s)
+	if err != nil {
+		log.Println("Error decoding body >>", err)
+		msg := rest.ResDetails{
+			Status:  "Error",
+			Message: "Couldn't decode schedule",
+			Errors:  []string{"Problem decoding"},
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	log.Println("Creating new shift: ", s)
 }
