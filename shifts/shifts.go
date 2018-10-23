@@ -2,6 +2,7 @@ package shifts
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest"
 	"github.com/maxdobeck/gatekeeper/sessions"
@@ -22,7 +23,8 @@ func New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var s models.Shift
-	err := json.NewDecoder(r.Body).Decode(&s)
+	var err error
+	err = json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
 		log.Println("Error decoding body >>", err)
 		msg := rest.ResDetails{
@@ -30,8 +32,25 @@ func New(w http.ResponseWriter, r *http.Request) {
 			Message: "Couldn't decode schedule",
 			Errors:  []string{"Problem decoding"},
 		}
+		log.Println(msg)
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
+	err = models.CreateShift(&s)
+	if err != nil {
+		msg := rest.ResDetails{
+			Status:  "Error",
+			Message: fmt.Sprintf("Couldn't create schedule in database: %s", s),
+			Errors:  []string{"Problem creating record", err.Error()},
+		}
+		log.Println(msg)
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+	msg := rest.ResDetails{
+		Status:  "OK",
+		Message: fmt.Sprintf("Shift created: %s", s.Title),
+	}
+	json.NewEncoder(w).Encode(msg)
 	log.Println("Creating new shift: ", s)
 }
