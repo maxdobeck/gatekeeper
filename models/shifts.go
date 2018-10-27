@@ -2,6 +2,8 @@ package models
 
 import (
 	"log"
+	"strconv"
+	"strings"
 )
 
 // Shift contains the core values
@@ -12,12 +14,27 @@ type Shift struct {
 
 // CreateShift builds a new schedule with the creator as the Owner
 func CreateShift(s *Shift) error {
-	// TODO Split out the Days slice into
-	_, err := Db.Query("INSERT INTO shifts(Title, Start, End, Stop, minEnrollees, Days) VALUES ($1,$2,$3,$4,$5,$6,$7)", s.Title, s.Start, s.End, s.Stop, s.minEnrollees, s.Days, s.Schedule)
+	d := week(s.Days)
+	min, _ := strconv.Atoi(s.minEnrollees)
+	_, err := Db.Query("INSERT INTO shifts(title, start_time, end_time, stop_date, min_enrollees, schedule_id, sun, mon, tue, wed, thu, fri, sat) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
+		s.Title, s.Start, s.End, s.Stop, min, s.Schedule, d[0], d[1], d[2], d[3], d[4], d[5], d[6])
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 	log.Println("Shift Created: ", s)
 	return err
+}
+
+func week(d [7]string) [7]bool {
+	var w [7]bool
+	sw := []string{"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"}
+	for i, v := range d {
+		if strings.EqualFold(v, sw[i]) {
+			w[i] = true
+		} else {
+			w[i] = false
+		}
+	}
+	return w
 }
