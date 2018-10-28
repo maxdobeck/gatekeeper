@@ -36,3 +36,5 @@ CREATE TABLE IF NOT EXISTS shifts(
   fri boolean DEFAULT FALSE,
   sat boolean DEFAULT FALSE
 );
+
+ALTER TABLE shifts ADD COLUMN created TIMESTAMP DEFAULT now();
