@@ -52,5 +52,4 @@ func New(w http.ResponseWriter, r *http.Request) {
 		Message: fmt.Sprintf("Shift created: %s", s.Title),
 	}
 	json.NewEncoder(w).Encode(msg)
-	log.Println("Creating new shift: ", s)
 }
