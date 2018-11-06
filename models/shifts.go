@@ -12,6 +12,12 @@ type Shift struct {
 	Days                                                [7]string
 }
 
+//ShiftPayload is the shift struct sent to the frontend
+type ShiftPayload struct {
+	ID, Title, Start, End, Stop, MinEnrollees, Schedule, Created string
+	Sun, Mon, Tue, Wed, Thur, Fri, Sat                           bool
+}
+
 // CreateShift builds a new shift and attaches it to a schedule
 func CreateShift(s *Shift) error {
 	d := week(s.Days)
@@ -24,6 +30,29 @@ func CreateShift(s *Shift) error {
 	}
 	log.Println("Shift Created: ", s)
 	return err
+}
+
+//GetShifts obtains all shifts linked to the supplied schedule
+func GetShifts(scheduleID string) ([]ShiftPayload, error) {
+	rows, err := Db.Query("SELECT * FROM shifts WHERE schedule_id = $1;", scheduleID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+	s := make([]ShiftPayload, 0)
+	for rows.Next() {
+		var id, title, start, end, stop, minenrollees, schedule, created string
+		var sun, mon, tue, wed, thu, fri, sat bool
+		err := rows.Scan(&id, &title, &start, &end, &stop, &minenrollees, &schedule, &sun, &mon, &tue, &wed, &thu, &fri, &sat, &created)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		s = append(s, ShiftPayload{id, title, start, end, stop, minenrollees, schedule, created, sun, mon, tue, wed, thu, fri, sat})
+	}
+	log.Println("Array of all schedules owned by: ", scheduleID, s)
+	return s, err
 }
 
 func week(d [7]string) [7]bool {
