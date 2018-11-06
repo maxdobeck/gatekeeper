@@ -27,10 +27,10 @@ func TestCreateShift(t *testing.T) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println("Member used for testing: ", memberID)
+		fmt.Println("Member ID used for testing: ", memberID)
 	}
 
-	srows, serrors := Db.Query("SELECT id FROM shifts LIMIT 1;")
+	srows, serrors := Db.Query("SELECT id FROM schedules LIMIT 1;")
 	if serrors != nil {
 		fmt.Println(serrors)
 	}
@@ -56,12 +56,12 @@ func TestCreateShift(t *testing.T) {
 	var newShiftError error
 	newShiftError = CreateShift(&s)
 	if newShiftError != nil {
-		fmt.Println(newShiftError)
+		fmt.Println("Test failed while creating new shift: ", newShiftError)
 		t.Fail()
 	}
 
 	var record string
-	err := Db.QueryRow("SELECT title FROM schedules WHERE title LIKE 'Test Shift'").Scan(&record)
+	err := Db.QueryRow("SELECT title FROM shifts WHERE title LIKE 'Test Shift'").Scan(&record)
 	if err != nil {
 		fmt.Println("Test Failed because: ", err)
 		t.Fail()
