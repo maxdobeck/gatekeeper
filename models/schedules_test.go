@@ -86,7 +86,7 @@ func TestGetSchedules(t *testing.T) {
 	var s []Schedule
 	s, getAllErr := GetSchedules(memberID)
 	if getAllErr != nil {
-		fmt.Println("All schedules: ", s)
+		fmt.Println("All schedules: ", s, getAllErr)
 		t.Fail()
 	}
 	cleanupDb()
