@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest"
-	"github.com/maxdobeck/gatekeeper/sessions"
+	"github.com/maxdobeck/gatekeeper/rest/sessions"
 	"log"
 	"net/http"
 )
@@ -52,4 +52,26 @@ func New(w http.ResponseWriter, r *http.Request) {
 		Message: fmt.Sprintf("Shift created: %s", s.Title),
 	}
 	json.NewEncoder(w).Encode(msg)
+}
+
+// FindAll will attempt to find all shifts based on the ScheduleID
+func FindAll(w http.ResponseWriter, r *http.Request) {
+	if sessions.GoodSession(r) != true {
+		msg := rest.ResDetails{
+			Status:  "Expired session or cookie",
+			Message: "Session Expired.  Log out and log back in.",
+			Errors:  []string{"Session Expired"},
+		}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+
+	// var s models.Shift
+	// var err error
+
+	// msg := rest.ResDetails{
+	// 	Status:  "OK",
+	// 	Message: fmt.Sprintf("Shifts found: %s", shifts),
+	// }
+	// json.NewEncoder(w).Encode(msg)
 }

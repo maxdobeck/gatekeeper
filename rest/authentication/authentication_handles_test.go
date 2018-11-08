@@ -2,8 +2,8 @@ package authentication
 
 import (
 	"fmt"
-	"github.com/maxdobeck/gatekeeper/members"
 	"github.com/maxdobeck/gatekeeper/models"
+	"github.com/maxdobeck/gatekeeper/rest/members"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"

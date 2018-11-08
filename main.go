@@ -5,12 +5,12 @@ import (
 	"github.com/gorilla/context"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
-	"github.com/maxdobeck/gatekeeper/authentication"
-	"github.com/maxdobeck/gatekeeper/members"
 	"github.com/maxdobeck/gatekeeper/models"
-	"github.com/maxdobeck/gatekeeper/schedules"
-	"github.com/maxdobeck/gatekeeper/sessions"
-	"github.com/maxdobeck/gatekeeper/shifts"
+	"github.com/maxdobeck/gatekeeper/rest/authentication"
+	"github.com/maxdobeck/gatekeeper/rest/members"
+	"github.com/maxdobeck/gatekeeper/rest/schedules"
+	"github.com/maxdobeck/gatekeeper/rest/sessions"
+	"github.com/maxdobeck/gatekeeper/rest/shifts"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 	"log"
@@ -79,7 +79,7 @@ func main() {
 	r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
 	// Shifts Routes
 	r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.New).Methods("POST")
-	//  r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.GetShifts).Methods("GET")
+	r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.FindAll).Methods("GET")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Get).Methods("GET")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Delete).Methods("DELETE")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Update).Methods("PATCH")
