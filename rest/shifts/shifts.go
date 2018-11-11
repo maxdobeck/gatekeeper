@@ -66,12 +66,15 @@ func FindAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// var s models.Shift
 	// var err error
+	// Get the scheduleID from the body and then find all shifts
+	log.Println(r.Body)
 
-	// msg := rest.ResDetails{
-	// 	Status:  "OK",
-	// 	Message: fmt.Sprintf("Shifts found: %s", shifts),
-	// }
-	// json.NewEncoder(w).Encode(msg)
+	// var s models.Shift
+
+	msg := rest.ResDetails{
+		Status: "OK",
+		// 	Message: fmt.Sprintf("Shifts found: %s", shifts),
+	}
+	json.NewEncoder(w).Encode(msg)
 }
