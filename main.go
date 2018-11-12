@@ -45,7 +45,9 @@ func main() {
 		[]byte("32-byte-long-auth-key"),
 		csrf.RequestHeader("X-CSRF-Token"),
 		csrf.CookieName("scheduler_csrf"),
-		csrf.Secure(false), // Disabled for localhost non-https debugging
+		// Disabled for local non-https debugging.
+		// If this isn't controlled by an env variable something is wrong
+		csrf.Secure(false),
 	)
 
 	c := cors.New(cors.Options{
@@ -63,26 +65,31 @@ func main() {
 	r.HandleFunc("/csrftoken", sessions.CsrfToken).Methods("GET")
 	r.HandleFunc("/login", authentication.Login).Methods("POST")
 	r.HandleFunc("/logout", authentication.Logout).Methods("DELETE")
+
 	// Session Routes
 	r.HandleFunc("/validsession", sessions.ValidSession).Methods("GET")
 	r.HandleFunc("/curmember", sessions.CurMember).Methods("GET")
+
 	// Member CRUD Routes
 	r.HandleFunc("/members", members.SignupMember).Methods("POST")
 	r.HandleFunc("/members/{id}/email", members.UpdateMemberEmail).Methods("PUT")
 	r.HandleFunc("/members/{id}/name", members.UpdateMemberName).Methods("PUT")
 	// r.HandleFunc("/members/{id}", members.DeleteMember).Methods("DELETE")
+
 	// Schedules CRUD Routes
 	r.HandleFunc("/schedules", schedules.NewSchedule).Methods("POST")
 	r.HandleFunc("/schedules/{id}", schedules.FindScheduleByID).Methods("GET")
 	r.HandleFunc("/schedules/owner/{id}", schedules.FindSchedulesByOwner).Methods("GET")
 	r.HandleFunc("/schedules/{id}/title", schedules.UpdateScheduleTitle).Methods("PATCH")
 	r.HandleFunc("/schedules/{id}", schedules.DeleteScheduleByID).Methods("DELETE")
-	// Shifts Routes
+
+	// Shifts CRUD Routes
 	r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.New).Methods("POST")
 	r.HandleFunc("/schedules/{scheduleid}/shifts", shifts.FindAll).Methods("GET")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Get).Methods("GET")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Delete).Methods("DELETE")
 	//  r.HandleFunc("/schedules/{scheduleid}/shifts/{shiftid}", shifts.Update).Methods("PATCH")
+
 	// Middleware
 	n := negroni.Classic()
 	n.Use(c)
