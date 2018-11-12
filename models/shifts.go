@@ -51,7 +51,7 @@ func GetShifts(scheduleID string) ([]ShiftPayload, error) {
 		}
 		s = append(s, ShiftPayload{id, title, start, end, stop, minenrollees, schedule, created, sun, mon, tue, wed, thu, fri, sat})
 	}
-	log.Println("Array of all schedules owned by: ", scheduleID, s)
+	log.Println("Array of all shifts owned by this schedule: ", scheduleID, s)
 	return s, err
 }
 

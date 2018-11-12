@@ -72,7 +72,7 @@ func TestCreateShift(t *testing.T) {
 	cleanupShifts()
 }
 
-// TestGetShifts creates a new shift
+// TestGetShifts gets all shifts
 func TestGetShifts(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
