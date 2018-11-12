@@ -259,7 +259,7 @@ func TestGetNonexistentScheduleByID(t *testing.T) {
 	}
 	wLogin := httptest.NewRecorder()
 	authentication.Login(wLogin, loginReq)
-	req, rErr := http.NewRequest("GET", "/schedules/owners"+models.GetMemberID(m.Email), nil)
+	req, rErr := http.NewRequest("GET", "/schedules/owners/"+models.GetMemberID(m.Email), nil)
 	if rErr != nil {
 		fmt.Println("Problem creating new request: ", rErr)
 		t.Fail()
