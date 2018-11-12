@@ -91,7 +91,7 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	log.Println(vars["id"])
+	log.Println("Schedule to be deleted: ", vars["id"])
 
 	curUser := sessions.CookieMemberID(r)
 	if curUser == "Error" {
