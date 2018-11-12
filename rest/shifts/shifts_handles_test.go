@@ -43,16 +43,16 @@ func TestFindAllShifts(t *testing.T) {
 	router.HandleFunc("/schedules/owner/{id}", schedules.FindSchedulesByOwner)
 	router.ServeHTTP(scheduleRecorder, req)
 
-	schedRes := schedules.Payload{}
+	schedRes := schedules.SinglePayload{}
 	json.Unmarshal([]byte(scheduleRecorder.Body.String()), &schedRes)
-	if len(schedRes.FoundSchedules) < 1 {
-		t.Errorf("Actual res: %s", schedRes)
-		t.Error("Not all schedules were found.")
+	if schedRes.ResDetails.Status != "OK" {
+		t.Errorf("Actual /schedules/owner/{id} response: %s to this request %s", scheduleRecorder.Body.String(), req.URL)
+		t.Error("Not all schedules were found.", schedRes)
 		t.Fail()
 	}
-	fmt.Println("Schedule ID we'll be using: ", schedRes.FoundSchedules[0].ID)
+	fmt.Println("Schedule ID we'll be using: ", schedRes.FoundSchedule.ID)
 
-	shiftReq, shiftReqErr := http.NewRequest("GET", "/schedules/"+schedRes.FoundSchedules[0].ID+"/shifts", nil)
+	shiftReq, shiftReqErr := http.NewRequest("GET", "/schedules/"+schedRes.FoundSchedule.ID+"/shifts", nil)
 	if shiftReqErr != nil {
 		fmt.Println("Problem creating new request: ", shiftReqErr)
 		t.Fail()
@@ -70,7 +70,7 @@ func TestFindAllShifts(t *testing.T) {
 	shiftPayload := Payload{}
 	json.Unmarshal([]byte(shiftRecorder.Body.String()), &shiftPayload)
 	if len(shiftPayload.FoundShifts) != 1 {
-		t.Error("Expected just 1 shift returned.", shiftPayload)
+		t.Error("Did not get our 1 target shift.", shiftPayload)
 	}
 	cleanupDb()
 }
@@ -101,7 +101,10 @@ func populateDb() models.NewMember {
 		}
 	}
 
-	franksSchedules, _ := models.GetSchedules(models.GetMemberID(m.Email))
+	franksSchedules, getErr := models.GetSchedules(models.GetMemberID(m.Email))
+	if getErr != nil {
+		fmt.Println("problem getting all of Franks Schedules!", getErr)
+	}
 
 	target := models.Shift{
 		Title:        "Morning Shift",
