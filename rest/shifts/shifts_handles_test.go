@@ -47,7 +47,7 @@ func TestFindAllShifts(t *testing.T) {
 	json.Unmarshal([]byte(scheduleRecorder.Body.String()), &schedRes)
 	if len(schedRes.FoundSchedules) < 1 {
 		t.Errorf("Actual res: %s", schedRes)
-		t.Error("Not all four schedules were found.")
+		t.Error("Not all schedules were found.")
 		t.Fail()
 	}
 	fmt.Println("Schedule ID we'll be using: ", schedRes.FoundSchedules[0].ID)
