@@ -73,7 +73,7 @@ func TestCreateShift(t *testing.T) {
 }
 
 // TestGetShifts gets all shifts
-func TestGetShifts(t *testing.T) {
+func TestGetShiftsModel(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
 	_, delErr := Db.Query("DELETE FROM schedules WHERE title like 'Test Shift'")
@@ -165,7 +165,7 @@ func TestGetShifts(t *testing.T) {
 		t.Error("Expected 3 shifts and got fewer than 3.")
 	}
 	if len(shifts) != 3 {
-		t.Error("Expected 3 shifts and did not get 3")
+		t.Error("Expected 3 shifts and did not get 3.  Got: ", len(shifts))
 	}
 
 	cleanupShifts()
