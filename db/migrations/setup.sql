@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS enrollments(
 
 CREATE TABLE IF NOT EXISTS shifts(
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-  schedule_id uuid REFERENCES schedules(id) ON DELETE CASCADE,
+  schedule_id uuid NOT NULL REFERENCES schedules(id) ON DELETE CASCADE,
   title text CONSTRAINT title_present NOT NULL,
   min_enrollees integer DEFAULT 0,
   start_time text CONSTRAINT start_time_present NOT NULL,
