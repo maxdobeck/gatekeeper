@@ -21,7 +21,7 @@ func TestFindAllShifts(t *testing.T) {
 	m := populateDb()
 
 	// Login to start a session
-	loginBody := strings.NewReader(`{"email": "frank@paddys.com", "password": "superduper"}`)
+	loginBody := strings.NewReader(`{"email": "frankshift@paddys.com", "password": "superduper"}`)
 	loginReq, loginErr := http.NewRequest("POST", "/login", loginBody)
 	if loginErr != nil {
 		t.Fail()
@@ -29,6 +29,7 @@ func TestFindAllShifts(t *testing.T) {
 	wLogin := httptest.NewRecorder()
 	authentication.Login(wLogin, loginReq)
 	memberID := models.GetMemberID(m.Email)
+	fmt.Println("Member we'll be using: ", memberID, m.Email)
 	req, rErr := http.NewRequest("GET", "/schedules/owner/"+memberID, nil)
 	if rErr != nil {
 		fmt.Println("Problem creating new request: ", rErr)
@@ -43,16 +44,18 @@ func TestFindAllShifts(t *testing.T) {
 	router.HandleFunc("/schedules/owner/{id}", schedules.FindSchedulesByOwner)
 	router.ServeHTTP(scheduleRecorder, req)
 
-	schedRes := schedules.SinglePayload{}
+	schedRes := schedules.Payload{}
+	fmt.Println("RAW Schedule Recorder Body", scheduleRecorder.Body.String())
 	json.Unmarshal([]byte(scheduleRecorder.Body.String()), &schedRes)
+	fmt.Println("SCHEDULE RESP JSON Payload: ", schedRes)
 	if schedRes.ResDetails.Status != "OK" {
 		t.Errorf("Actual /schedules/owner/{id} response: %s to this request %s", scheduleRecorder.Body.String(), req.URL)
 		t.Error("Not all schedules were found.", schedRes)
 		t.Fail()
 	}
-	fmt.Println("Schedule ID we'll be using: ", schedRes.FoundSchedule.ID)
+	fmt.Println("Schedule ID we'll be using: ", schedRes.FoundSchedules[0].ID)
 
-	shiftReq, shiftReqErr := http.NewRequest("GET", "/schedules/"+schedRes.FoundSchedule.ID+"/shifts", nil)
+	shiftReq, shiftReqErr := http.NewRequest("GET", "/schedules/"+schedRes.FoundSchedules[0].ID+"/shifts", nil)
 	if shiftReqErr != nil {
 		fmt.Println("Problem creating new request: ", shiftReqErr)
 		t.Fail()
@@ -79,8 +82,8 @@ func TestFindAllShifts(t *testing.T) {
 func populateDb() models.NewMember {
 	m := models.NewMember{
 		Name:      "Frank",
-		Email:     "frank@paddys.com",
-		Email2:    "frank@paddys.com",
+		Email:     "frankshift@paddys.com",
+		Email2:    "frankshift@paddys.com",
 		Password:  "superduper",
 		Password2: "superduper",
 	}
@@ -128,7 +131,7 @@ func populateDb() models.NewMember {
 
 // cleanupDb undoes the populateDb
 func cleanupDb() {
-	_, err := models.Db.Query("DELETE FROM members WHERE email LIKE 'frank@paddys.com'")
+	_, err := models.Db.Query("DELETE FROM members WHERE email LIKE 'frankshift@paddys.com'")
 	if err != nil {
 		fmt.Println(err)
 	}
