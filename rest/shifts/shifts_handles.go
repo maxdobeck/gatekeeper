@@ -77,7 +77,7 @@ func FindAll(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.Body)
 
 	vars := mux.Vars(r)
-	log.Println("Get All Shifts for this Schedule: ", vars["id"])
+	log.Println("Get All Shifts for this Schedule: ", vars["scheduleid"], vars)
 
 	curUser := sessions.CookieMemberID(r)
 	if curUser == "Error" {
@@ -91,7 +91,7 @@ func FindAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	foundShifts, getAllErr := models.GetShifts(vars["id"])
+	foundShifts, getAllErr := models.GetShifts(vars["scheduleid"])
 	if getAllErr != nil {
 		msg := rest.ResDetails{
 			Status:  "Error",
