@@ -81,7 +81,7 @@ func TestGetShiftsModel(t *testing.T) {
 
 	spoofShifts()
 
-	rows, errors := Db.Query("SELECT id FROM members LIMIT 1;")
+	rows, errors := Db.Query("SELECT id FROM members WHERE name like 'testuser44@gmail.com';")
 	if errors != nil {
 		fmt.Println(errors)
 	}

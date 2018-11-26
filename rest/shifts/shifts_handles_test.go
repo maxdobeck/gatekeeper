@@ -65,7 +65,7 @@ func TestFindAllShifts(t *testing.T) {
 
 	shiftRecorder := httptest.NewRecorder()
 	shiftRouter := mux.NewRouter()
-	shiftRouter.HandleFunc("/schedules/{id}/shifts", FindAll)
+	shiftRouter.HandleFunc("/schedules/{scheduleid}/shifts", FindAll)
 	shiftRouter.ServeHTTP(shiftRecorder, shiftReq)
 
 	// Actual test: We're looking for 1 shift
