@@ -15,34 +15,17 @@ func TestCreateShift(t *testing.T) {
 	fmt.Println(delErr)
 
 	spoofShifts()
+	memberID := GetMemberID("testuser144@gmail.com")
+	fmt.Println("Member ID used for testing: ", memberID)
 
-	rows, errors := Db.Query("SELECT id FROM members LIMIT 1;")
-	if errors != nil {
-		fmt.Println(errors)
-	}
-	defer rows.Close()
-	var memberID string
-	for rows.Next() {
-		err := rows.Scan(&memberID)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Member ID used for testing: ", memberID)
-	}
-
-	srows, serrors := Db.Query("SELECT id FROM schedules LIMIT 1;")
-	if serrors != nil {
-		fmt.Println(serrors)
-	}
-	defer srows.Close()
 	var scheduleID string
-	for srows.Next() {
-		rerr := srows.Scan(&scheduleID)
-		if rerr != nil {
-			fmt.Println(rerr)
-		}
-		fmt.Println("Schedule ID used for test Shift: ", scheduleID)
+	schedules, getSchedErr := GetSchedules(memberID)
+	if getSchedErr != nil {
+		t.Error("Error getting schedule.", getSchedErr)
+		t.FailNow()
 	}
+	scheduleID = schedules[0].ID
+	fmt.Println("Schedule ID used for test Shift: ", scheduleID)
 
 	s := Shift{
 		Title:        "Test Shift",
@@ -81,33 +64,16 @@ func TestGetShiftsModel(t *testing.T) {
 
 	spoofShifts()
 
-	rows, errors := Db.Query("SELECT id FROM members WHERE name like 'testuser44@gmail.com';")
-	if errors != nil {
-		fmt.Println(errors)
-	}
-	defer rows.Close()
-	var memberID string
-	for rows.Next() {
-		err := rows.Scan(&memberID)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Member ID used for testing: ", memberID)
-	}
-
-	srows, serrors := Db.Query("SELECT id FROM schedules LIMIT 1;")
-	if serrors != nil {
-		fmt.Println(serrors)
-	}
-	defer srows.Close()
+	memberID := GetMemberID("testuser144@gmail.com")
+	fmt.Println("Member ID used for testing: ", memberID)
 	var scheduleID string
-	for srows.Next() {
-		rerr := srows.Scan(&scheduleID)
-		if rerr != nil {
-			fmt.Println(rerr)
-		}
-		fmt.Println("Schedule ID used for test Shift: ", scheduleID)
+	schedules, getSchedErr := GetSchedules(memberID)
+	if getSchedErr != nil {
+		t.Error("Error getting schedule.", getSchedErr)
+		t.FailNow()
 	}
+	scheduleID = schedules[0].ID
+	fmt.Println("ScheduleID used to test GetShifts", scheduleID)
 
 	s := Shift{
 		Title:        "Test Shift",
@@ -175,8 +141,8 @@ func TestGetShiftsModel(t *testing.T) {
 func spoofShifts() {
 	m := NewMember{
 		Name:      "Test Member",
-		Email:     "testuser44@gmail.com",
-		Email2:    "testuser44@gmail.com",
+		Email:     "testuser144@gmail.com",
+		Email2:    "testuser144@gmail.com",
 		Password:  "superduper",
 		Password2: "superduper",
 	}
@@ -185,7 +151,7 @@ func spoofShifts() {
 	}
 
 	l := make([]*Schedule, 1)
-	l[0] = &Schedule{"", "My Morning Shift", GetMemberID("testuser44@gmail.com")}
+	l[0] = &Schedule{"", "My Morning Schedule", GetMemberID("testuser144@gmail.com")}
 
 	for i := range l {
 		if CreateSchedule(l[i]) != nil {
@@ -196,7 +162,7 @@ func spoofShifts() {
 
 // cleanupShifts undoes the shift spoofing func with a cascade delete
 func cleanupShifts() {
-	_, err := Db.Query("DELETE FROM members WHERE email LIKE 'testuser44@gmail.com'")
+	_, err := Db.Query("DELETE FROM members WHERE email LIKE 'testuser144@gmail.com'")
 	if err != nil {
 		fmt.Println(err)
 	}
