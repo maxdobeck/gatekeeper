@@ -33,7 +33,7 @@ func New(w http.ResponseWriter, r *http.Request) {
 	var err error
 	err = json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
-		log.Println("Error decoding body >>", err)
+		log.Println("Error decoding body >>", err, r.Body)
 		msg := rest.ResDetails{
 			Status:  "Error",
 			Message: "Couldn't decode schedule",
