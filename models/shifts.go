@@ -42,14 +42,14 @@ func GetShifts(scheduleID string) ([]ShiftPayload, error) {
 	defer rows.Close()
 	s := make([]ShiftPayload, 0)
 	for rows.Next() {
-		var id, title, start, end, stop, minenrollees, schedule, created string
+		var ID, Title, StartTime, EndTime, StopDate, MinEnrollees, Schedule, created string
 		var sun, mon, tue, wed, thu, fri, sat bool
-		err := rows.Scan(&id, &title, &start, &end, &stop, &minenrollees, &schedule, &sun, &mon, &tue, &wed, &thu, &fri, &sat, &created)
+		err := rows.Scan(&ID, &Schedule, &Title, &MinEnrollees, &StartTime, &EndTime, &StopDate, &sun, &mon, &tue, &wed, &thu, &fri, &sat, &created)
 		if err != nil {
 			log.Println(err)
 			return nil, err
 		}
-		s = append(s, ShiftPayload{id, title, start, end, stop, minenrollees, schedule, created, sun, mon, tue, wed, thu, fri, sat})
+		s = append(s, ShiftPayload{ID, Title, StartTime, EndTime, StopDate, MinEnrollees, Schedule, created, sun, mon, tue, wed, thu, fri, sat})
 	}
 	log.Println("Array of all shifts owned by this schedule: ", scheduleID, s)
 	return s, err
