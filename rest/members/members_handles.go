@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
-	"github.com/maxdobeck/gatekeeper/sessions"
+	"github.com/maxdobeck/gatekeeper/rest/sessions"
 	"log"
 	"net/http"
 )
