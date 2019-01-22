@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
-	"github.com/maxdobeck/gatekeeper/sessions"
+	"github.com/maxdobeck/gatekeeper/rest/sessions"
 	"log"
 	"net/http"
 )
@@ -18,12 +18,13 @@ type ResDetails struct {
 	Errors  []string
 }
 
+// Payload is the details of the response and the returned schedules
 type Payload struct {
 	ResDetails
 	FoundSchedules []models.Schedule
 }
 
-// This should probably be an interface for payload
+// SinglePayload should probably be an interface for payload
 type SinglePayload struct {
 	ResDetails
 	FoundSchedule models.Schedule
@@ -59,7 +60,6 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 		}
 		json.NewEncoder(w).Encode(msg)
 		return
-		log.Println("Schedule cannot be empty", err)
 	}
 	scheduleErr := models.CreateSchedule(&s)
 	if scheduleErr != nil {
@@ -80,7 +80,7 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(msg)
 }
 
-// Delete schedule by specified ID if owner made request
+// DeleteScheduleByID deletes by specified ID if owner made request
 func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 	if sessions.GoodSession(r) != true {
 		msg := ResDetails{
@@ -91,13 +91,13 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	log.Println(vars["id"])
+	log.Println("Schedule to be deleted: ", vars["id"])
 
 	curUser := sessions.CookieMemberID(r)
 	if curUser == "Error" {
 		log.Println("Problem getting member ID from cookie.  Log in and log out.")
 	}
-	schedule, sErr := models.GetScheduleById(vars["id"])
+	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
 		log.Println("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
@@ -134,6 +134,7 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(msg)
 }
 
+//UpdateScheduleTitle will let the user update the title
 func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	var updateErrors []string
 	if sessions.GoodSession(r) != true {
@@ -167,7 +168,7 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	}
 	// Check that current user is allowed to touch the schedule
 	// (that the cookie session for the logged in user == the schedule owner)
-	schedule, sErr := models.GetScheduleById(vars["id"])
+	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
 		log.Println("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
@@ -205,7 +206,6 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 		}
 		json.NewEncoder(w).Encode(msg)
 		return
-		log.Println("Schedule cannot be empty", err)
 	}
 	log.Printf("User %s is updating schedule %s with new title: %s", curUser, vars["id"], titleUpdate.NewTitle)
 	updateErr := models.UpdateScheduleTitle(vars["id"], titleUpdate.NewTitle)
@@ -224,7 +224,7 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(msg)
 }
 
-// Find Schedule based on the specified schedule ID
+// FindScheduleByID based on the specified schedule ID
 func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 	if sessions.GoodSession(r) != true {
 		msg := ResDetails{
@@ -245,7 +245,7 @@ func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
-	schedule, sErr := models.GetScheduleById(vars["id"])
+	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
 		log.Println("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
@@ -274,7 +274,7 @@ func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(msg)
 }
 
-// Find All Schedules based on member ID
+// FindSchedulesByOwner gets all schedules based on member ID
 func FindSchedulesByOwner(w http.ResponseWriter, r *http.Request) {
 	if sessions.GoodSession(r) != true {
 		msg := ResDetails{

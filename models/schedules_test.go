@@ -21,18 +21,18 @@ func TestCreateSchedule(t *testing.T) {
 		fmt.Println(errors)
 	}
 	defer rows.Close()
-	var memberId string
+	var memberID string
 	for rows.Next() {
-		err := rows.Scan(&memberId)
+		err := rows.Scan(&memberID)
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println(memberId)
+		fmt.Println(memberID)
 	}
 
 	s := Schedule{
 		Title:   "Test Schedule",
-		OwnerID: memberId,
+		OwnerID: memberID,
 	}
 
 	var newScheduleError error
@@ -61,13 +61,13 @@ func TestCreateSchedule(t *testing.T) {
 // TestUpdateTitle will change the Title of a schedule
 func TestUpdateTitle(t *testing.T) {
 	populateDb()
-	var scheduleId string
-	err := Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&scheduleId)
+	var scheduleID string
+	err := Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&scheduleID)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
-	updateErr := UpdateScheduleTitle(scheduleId, "New Schedule Title Added")
+	updateErr := UpdateScheduleTitle(scheduleID, "New Schedule Title Added")
 	if updateErr != nil {
 		fmt.Println("Failed to update schedule title: ", updateErr)
 		t.Fail()
@@ -78,15 +78,15 @@ func TestUpdateTitle(t *testing.T) {
 // TestGetSchedules trys to get all of a member's schedules
 func TestGetSchedules(t *testing.T) {
 	populateDb()
-	memberId := GetMemberID("testuser33@gmail.com")
-	if memberId == "" {
+	memberID := GetMemberID("testuser33@gmail.com")
+	if memberID == "" {
 		t.Fail()
 	}
 
 	var s []Schedule
-	s, getAllErr := GetSchedules(memberId)
+	s, getAllErr := GetSchedules(memberID)
 	if getAllErr != nil {
-		fmt.Println("All schedules: ", s)
+		fmt.Println("All schedules: ", s, getAllErr)
 		t.Fail()
 	}
 	cleanupDb()
@@ -101,12 +101,12 @@ func TestGetScheduleById(t *testing.T) {
 		fmt.Println("Could not find schedule: ", s)
 		t.Fail()
 	}
-	schedule, err := GetScheduleById(s)
+	schedule, err := GetScheduleByID(s)
 	if err != nil {
 		fmt.Println("Could not find schedule: ", s)
 		t.Fail()
 	}
-	if schedule.Id != s {
+	if schedule.ID != s {
 		fmt.Printf("Could not find schedule. Target schedule id %s != record from DB %s", s, schedule)
 		t.Fail()
 	}
