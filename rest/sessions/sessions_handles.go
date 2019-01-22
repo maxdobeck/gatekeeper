@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/csrf"
 	"github.com/maxdobeck/gatekeeper/models"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -27,18 +27,18 @@ type Payload struct {
 
 // CsrfToken will generate a CSRF Token
 func CsrfToken(w http.ResponseWriter, r *http.Request) {
-	log.Println("Generating csrf token")
+	log.Info("Generating csrf token")
 	w.Header().Set("X-CSRF-Token", csrf.Token(r))
 }
 
 // ValidSession checks that the session is valid and can user can make requests
 func ValidSession(w http.ResponseWriter, r *http.Request) {
 	if GoodSession(r) != true {
-		log.Println("Session is old, must log out log back in.")
+		log.Info("Session is old, must log out log back in.")
 		//w.WriteHeader(http.StatusUnauthorized)
 		http.Error(w, "Session is expired.", http.StatusUnauthorized)
 	} else {
-		log.Println("Session is good.")
+		log.Info("Session is good.")
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -58,7 +58,7 @@ func CurMember(w http.ResponseWriter, r *http.Request) {
 	}
 	memberID := CookieMemberID(r)
 	if memberID == "Error" {
-		log.Println("No valid value in cookie.  Log out and log back in.")
+		log.Info("No valid value in cookie.  Log out and log back in.")
 		// resDetails should have the error for the client here
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -66,7 +66,7 @@ func CurMember(w http.ResponseWriter, r *http.Request) {
 	name := models.GetMemberName(memberID)
 	email := models.GetMemberEmail(memberID)
 	member := curMember{Name: name, Email: email, ID: memberID}
-	log.Println("Current member based on cookie: ", member)
+	log.Info("Current member based on cookie: ", member)
 
 	msgDetails := resDetails{
 		Status:  "OK",
@@ -76,7 +76,7 @@ func CurMember(w http.ResponseWriter, r *http.Request) {
 		resDetails: msgDetails,
 		curMember:  member,
 	}
-	log.Println("Payload for /CurMember: ", msg)
+	log.Info("Payload for /CurMember: ", msg)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(msg)
 }

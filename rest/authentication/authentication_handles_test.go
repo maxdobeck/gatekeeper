@@ -1,9 +1,8 @@
 package authentication
 
 import (
-	"fmt"
 	"github.com/maxdobeck/gatekeeper/models"
-	"github.com/maxdobeck/gatekeeper/rest/members"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -18,7 +17,7 @@ func TestLoginBadCredentials(t *testing.T) {
 
 	req, err := http.NewRequest("POST", "/login", bodyReader)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal("Problem making our login req. ", err)
 	}
 	w := httptest.NewRecorder()
 	Login(w, req)
@@ -30,33 +29,36 @@ func TestLoginBadCredentials(t *testing.T) {
 		t.Fail()
 	}
 
-	fmt.Println(resp.StatusCode)
-	fmt.Println(resp.Header.Get("Content-Type"))
-	fmt.Println(string(body))
+	log.Debug(resp.StatusCode)
+	log.Debug(resp.Header.Get("Content-Type"))
+	log.Debug(string(body))
 }
 
 // Test the Login command with a valid set of credentials
 func TestLoginGoodCredentials(t *testing.T) {
 	models.ConnToDB(os.Getenv("PGURL"))
-	// Signup a user
-	signupBody := strings.NewReader(`{"email": "testValidCreds@gmail.com", "email2":"testValidCreds@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Valid User Signup"}`)
-	signupReq, signupErr := http.NewRequest("POST", "/members", signupBody)
-	if signupErr != nil {
-		t.Log("Ignoring that the user already exists.  Doesn't matter for test.")
-	}
-	wSignup := httptest.NewRecorder()
-	members.SignupMember(wSignup, signupReq)
+	_, delErr := models.Db.Query("DELETE FROM members WHERE email like 'validmember@gmail.com'")
+	log.Info(delErr)
 
-	bodyReader := strings.NewReader(`{"email": "testValidCreds@gmail.com", "password": "supersecret"}`)
+	valid := models.NewMember{
+		Name:      "Valid Test Member",
+		Email:     "validmember@gmail.com",
+		Email2:    "validmember@gmail.com",
+		Password:  "superduper",
+		Password2: "superduper",
+	}
+	models.CreateMember(&valid)
+
+	bodyReader := strings.NewReader(`{"email": "validmember@gmail.com", "password": "superduper"}`)
 	req, err := http.NewRequest("POST", "/login", bodyReader)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal("Problem logging in ", err)
 	}
 	w := httptest.NewRecorder()
 	Login(w, req)
 
 	resp := w.Result()
-	fmt.Println(resp.StatusCode)
+	log.Info(resp.StatusCode)
 
 	if resp.StatusCode != 200 {
 		t.Fail()

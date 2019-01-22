@@ -4,7 +4,7 @@ package models
 import (
 	"database/sql"
 	_ "github.com/lib/pq" // github.com/lib/pq
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 // Db is global variable pointer to database connection
@@ -15,9 +15,9 @@ func ConnToDB(dbURL string) {
 	var err error
 	Db, err = sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 	if err = Db.Ping(); err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 }

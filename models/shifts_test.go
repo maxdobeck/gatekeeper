@@ -2,7 +2,7 @@ package models
 
 import (
 	// _ "github.com/lib/pq" // github.com/lib/pq
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"testing"
 )
@@ -12,11 +12,11 @@ func TestCreateShift(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
 	_, delErr := Db.Query("DELETE FROM schedules WHERE title like 'Test Shift'")
-	fmt.Println(delErr)
+	log.Info(delErr)
 
 	spoofShifts()
 	memberID := GetMemberID("testuser144@gmail.com")
-	fmt.Println("Member ID used for testing: ", memberID)
+	log.Info("Member ID used for testing: ", memberID)
 
 	var scheduleID string
 	schedules, getSchedErr := GetSchedules(memberID)
@@ -25,7 +25,7 @@ func TestCreateShift(t *testing.T) {
 		t.FailNow()
 	}
 	scheduleID = schedules[0].ID
-	fmt.Println("Schedule ID used for test Shift: ", scheduleID)
+	log.Info("Schedule ID used for test Shift: ", scheduleID)
 
 	s := Shift{
 		Title:        "Test Shift",
@@ -39,14 +39,14 @@ func TestCreateShift(t *testing.T) {
 	var newShiftError error
 	newShiftError = CreateShift(&s)
 	if newShiftError != nil {
-		fmt.Println("Test failed while creating new shift: ", newShiftError)
+		log.Info("Test failed while creating new shift: ", newShiftError)
 		t.Fail()
 	}
 
 	var record string
 	err := Db.QueryRow("SELECT title FROM shifts WHERE title LIKE 'Test Shift'").Scan(&record)
 	if err != nil {
-		fmt.Println("Test Failed because: ", err)
+		log.Info("Test Failed because: ", err)
 		t.Fail()
 	}
 	if record != "Test Shift" {
@@ -60,12 +60,12 @@ func TestGetShiftsModel(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
 	_, delErr := Db.Query("DELETE FROM schedules WHERE title like 'Test Shift'")
-	fmt.Println(delErr)
+	log.Info(delErr)
 
 	spoofShifts()
 
 	memberID := GetMemberID("testuser144@gmail.com")
-	fmt.Println("Member ID used for testing: ", memberID)
+	log.Info("Member ID used for testing: ", memberID)
 	var scheduleID string
 	schedules, getSchedErr := GetSchedules(memberID)
 	if getSchedErr != nil {
@@ -73,7 +73,7 @@ func TestGetShiftsModel(t *testing.T) {
 		t.FailNow()
 	}
 	scheduleID = schedules[0].ID
-	fmt.Println("ScheduleID used to test GetShifts", scheduleID)
+	log.Info("ScheduleID used to test GetShifts", scheduleID)
 
 	s := Shift{
 		Title:        "Test Shift",
@@ -105,25 +105,25 @@ func TestGetShiftsModel(t *testing.T) {
 	var newShiftError error
 	newShiftError = CreateShift(&s)
 	if newShiftError != nil {
-		fmt.Println("Test failed while creating new shift: ", newShiftError)
+		log.Info("Test failed while creating new shift: ", newShiftError)
 		t.Fail()
 	}
 
 	newShiftError = CreateShift(&s2)
 	if newShiftError != nil {
-		fmt.Println("Test failed while creating new shift: ", newShiftError)
+		log.Info("Test failed while creating new shift: ", newShiftError)
 		t.Fail()
 	}
 
 	newShiftError = CreateShift(&s3)
 	if newShiftError != nil {
-		fmt.Println("Test failed while creating new shift: ", newShiftError)
+		log.Info("Test failed while creating new shift: ", newShiftError)
 		t.Fail()
 	}
 
 	shifts, getErr := GetShifts(scheduleID)
 	if getErr != nil {
-		fmt.Println("Failed due to: ", getErr)
+		log.Info("Failed due to: ", getErr)
 		t.Fail()
 	}
 
@@ -147,7 +147,7 @@ func spoofShifts() {
 		Password2: "superduper",
 	}
 	if CreateMember(&m) != nil {
-		fmt.Println("Member may already be there")
+		log.Info("Member may already be there")
 	}
 
 	l := make([]*Schedule, 1)
@@ -155,7 +155,7 @@ func spoofShifts() {
 
 	for i := range l {
 		if CreateSchedule(l[i]) != nil {
-			fmt.Println("Schedule may already exist")
+			log.Info("Schedule may already exist")
 		}
 	}
 }
@@ -164,6 +164,6 @@ func spoofShifts() {
 func cleanupShifts() {
 	_, err := Db.Query("DELETE FROM members WHERE email LIKE 'testuser144@gmail.com'")
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 	}
 }

@@ -4,7 +4,7 @@ package sessions
 import (
 	"github.com/antonlindstrom/pgstore"
 	_ "github.com/lib/pq" // github.com/lib/pq
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -16,7 +16,7 @@ var (
 
 func check(err error) {
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 }
 
@@ -31,10 +31,10 @@ func GoodSession(r *http.Request) bool {
 
 	// Check if user is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-		log.Println("Stale session rejected: ", session)
+		log.Info("Stale session rejected: ", session)
 		return false
 	}
-	log.Println("Session OK: ", session)
+	log.Info("Session OK: ", session)
 	return true
 }
 
