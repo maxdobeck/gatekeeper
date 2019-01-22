@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/maxdobeck/gatekeeper.svg?style=svg)](https://circleci.com/gh/maxdobeck/gatekeeper)
 # Gatekeeper
 Service to authenticate users, manage user sessions, and process business logic.
 
