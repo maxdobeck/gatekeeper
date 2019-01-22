@@ -50,7 +50,7 @@ jobs:
       - checkout
       - run:
           name: Deploy Dev to Heroku User Acceptance Environment
-          command: git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git dev:master
+          command: git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master:master
   deploy-prod:
     docker:
       - image: buildpack-deps:trusty
@@ -69,7 +69,7 @@ workflows:
             - build-test
           filters:
             branches:
-              only: dev
+              only: master
       - deploy-prod:
           requires:
             - build-test
