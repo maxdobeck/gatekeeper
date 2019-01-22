@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/models"
+	"github.com/maxdobeck/gatekeeper/rest/authentication"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -234,7 +234,7 @@ func TestFindScheduleByID(t *testing.T) {
 
 	res := SinglePayload{}
 	json.Unmarshal([]byte(w.Body.String()), &res)
-	if res.FoundSchedule.Id != targetID {
+	if res.FoundSchedule.ID != targetID {
 		t.Error("Bad schedule was returned in the payload")
 		t.Fail()
 	}
@@ -259,7 +259,7 @@ func TestGetNonexistentScheduleByID(t *testing.T) {
 	}
 	wLogin := httptest.NewRecorder()
 	authentication.Login(wLogin, loginReq)
-	req, rErr := http.NewRequest("GET", "/schedules/owners"+models.GetMemberID(m.Email), nil)
+	req, rErr := http.NewRequest("GET", "/schedules/owners/"+models.GetMemberID(m.Email), nil)
 	if rErr != nil {
 		fmt.Println("Problem creating new request: ", rErr)
 		t.Fail()
@@ -301,10 +301,10 @@ func populateDb() models.NewMember {
 	}
 
 	l := make([]*models.Schedule, 4)
-	l[0] = &models.Schedule{"", "Test Test Schedule", models.GetMemberID(m.Email)}
-	l[1] = &models.Schedule{"", "My 2nd Schedule", models.GetMemberID(m.Email)}
-	l[2] = &models.Schedule{"", "My 3rd Schedule", models.GetMemberID(m.Email)}
-	l[3] = &models.Schedule{"", "My 4th Schedule", models.GetMemberID(m.Email)}
+	l[0] = &models.Schedule{ID: "", Title: "Test Test Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[1] = &models.Schedule{ID: "", Title: "My 2nd Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[2] = &models.Schedule{ID: "", Title: "My 3rd Schedule", OwnerID: models.GetMemberID(m.Email)}
+	l[3] = &models.Schedule{ID: "", Title: "My 4th Schedule", OwnerID: models.GetMemberID(m.Email)}
 
 	for i := range l {
 		err := models.CreateSchedule(l[i])

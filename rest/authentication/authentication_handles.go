@@ -6,7 +6,7 @@ import (
 	"github.com/antonlindstrom/pgstore"
 	"github.com/gorilla/csrf"
 	"github.com/maxdobeck/gatekeeper/models"
-	"github.com/maxdobeck/gatekeeper/sessions"
+	"github.com/maxdobeck/gatekeeper/rest/sessions"
 	"log"
 	"net/http"
 	"os"

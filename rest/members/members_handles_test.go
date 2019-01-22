@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq" // github.com/lib/pq
-	"github.com/maxdobeck/gatekeeper/authentication"
 	"github.com/maxdobeck/gatekeeper/models"
+	"github.com/maxdobeck/gatekeeper/rest/authentication"
 	"net/http"
 	"net/http/httptest"
 	"os"
