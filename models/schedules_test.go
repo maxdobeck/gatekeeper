@@ -3,6 +3,7 @@ package models
 import (
 	// _ "github.com/lib/pq" // github.com/lib/pq
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"testing"
 )
@@ -12,22 +13,22 @@ func TestCreateSchedule(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
 	_, delErr := Db.Query("DELETE FROM schedules WHERE title like 'Test Schedule'")
-	fmt.Println(delErr)
+	log.Info(delErr)
 
 	populateDb()
 
 	rows, errors := Db.Query("SELECT id FROM members LIMIT 1;")
 	if errors != nil {
-		fmt.Println(errors)
+		log.Info(errors)
 	}
 	defer rows.Close()
 	var memberID string
 	for rows.Next() {
 		err := rows.Scan(&memberID)
 		if err != nil {
-			fmt.Println(err)
+			log.Info(err)
 		}
-		fmt.Println(memberID)
+		log.Info(memberID)
 	}
 
 	s := Schedule{
@@ -38,14 +39,14 @@ func TestCreateSchedule(t *testing.T) {
 	var newScheduleError error
 	newScheduleError = CreateSchedule(&s)
 	if newScheduleError != nil {
-		fmt.Println(newScheduleError)
+		log.Info(newScheduleError)
 		t.Fail()
 	}
 
 	var record string
 	err := Db.QueryRow("SELECT title FROM schedules WHERE title LIKE 'Test Schedule'").Scan(&record)
 	if err != nil {
-		fmt.Println("Test Failed because: ", err)
+		log.Info("Test Failed because: ", err)
 		t.Fail()
 	}
 	if record != "Test Schedule" {
@@ -64,12 +65,12 @@ func TestUpdateTitle(t *testing.T) {
 	var scheduleID string
 	err := Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&scheduleID)
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 		t.Fail()
 	}
 	updateErr := UpdateScheduleTitle(scheduleID, "New Schedule Title Added")
 	if updateErr != nil {
-		fmt.Println("Failed to update schedule title: ", updateErr)
+		log.Info("Failed to update schedule title: ", updateErr)
 		t.Fail()
 	}
 	cleanupDb()
@@ -86,7 +87,7 @@ func TestGetSchedules(t *testing.T) {
 	var s []Schedule
 	s, getAllErr := GetSchedules(memberID)
 	if getAllErr != nil {
-		fmt.Println("All schedules: ", s, getAllErr)
+		log.Info("All schedules: ", s, getAllErr)
 		t.Fail()
 	}
 	cleanupDb()
@@ -98,12 +99,12 @@ func TestGetScheduleById(t *testing.T) {
 	var s string
 	err := Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&s)
 	if err != nil {
-		fmt.Println("Could not find schedule: ", s)
+		log.Info("Could not find schedule: ", s)
 		t.Fail()
 	}
 	schedule, err := GetScheduleByID(s)
 	if err != nil {
-		fmt.Println("Could not find schedule: ", s)
+		log.Info("Could not find schedule: ", s)
 		t.Fail()
 	}
 	if schedule.ID != s {
@@ -119,12 +120,12 @@ func TestDeleteSchedule(t *testing.T) {
 	var err error
 	err = Db.QueryRow("SELECT id FROM schedules LIMIT 1").Scan(&s)
 	if err != nil {
-		fmt.Println("Could not find a schedule to test on")
+		log.Info("Could not find a schedule to test on")
 		t.Fail()
 	}
 	err = DeleteSchedule(s)
 	if err != nil {
-		fmt.Println("Could not delete schedule: ", s)
+		log.Info("Could not delete schedule: ", s)
 		t.Fail()
 	}
 	cleanupDb()
@@ -140,7 +141,7 @@ func populateDb() {
 		Password2: "superduper",
 	}
 	if CreateMember(&m) != nil {
-		fmt.Println("Member may already be there")
+		log.Info("Member may already be there")
 	}
 
 	l := make([]*Schedule, 4)
@@ -151,7 +152,7 @@ func populateDb() {
 
 	for i := range l {
 		if CreateSchedule(l[i]) != nil {
-			fmt.Println("Schedule may already exist")
+			log.Info("Schedule may already exist")
 		}
 	}
 }
@@ -160,6 +161,6 @@ func populateDb() {
 func cleanupDb() {
 	_, err := Db.Query("DELETE FROM members WHERE email LIKE 'testuser33@gmail.com'")
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 	}
 }

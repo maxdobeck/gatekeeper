@@ -12,8 +12,8 @@ import (
 	"github.com/maxdobeck/gatekeeper/rest/sessions"
 	"github.com/maxdobeck/gatekeeper/rest/shifts"
 	"github.com/rs/cors"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/negroni"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -104,6 +104,6 @@ func main() {
 		hostURL = "http://localhost"
 	}
 	port := os.Getenv("PORT")
-	log.Println("Listening on: ", hostURL+":"+port)
+	log.Info("Listening on: ", hostURL+":"+port)
 	log.Fatal(http.ListenAndServe(":"+port, context.ClearHandler(n)))
 }

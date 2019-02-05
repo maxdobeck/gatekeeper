@@ -3,8 +3,8 @@ package models
 import (
 	"database/sql"
 	_ "github.com/lib/pq" // github.com/lib/pq
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 )
 
 // NewMember is the struct for the member signup process
@@ -21,11 +21,11 @@ func hashPassword(password string) (string, error) {
 func CreateMember(m *NewMember) error {
 	hashedPw, hashErr := hashPassword(m.Password)
 	if hashErr != nil {
-		log.Println("Error hashing password: ", hashErr)
+		log.Fatal("Error hashing password: ", hashErr)
 	}
 	_, err := Db.Query("INSERT INTO members(name, email, password) VALUES ($1,$2, $3)", m.Name, m.Email, hashedPw)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 		return err
 	}
 	return err
@@ -39,7 +39,7 @@ func GetMemberID(email string) (memberID string) {
 		return
 	}
 	if sqlErr != nil {
-		log.Println(sqlErr)
+		log.Fatal(sqlErr)
 	}
 	return
 }
@@ -52,7 +52,7 @@ func GetMemberName(id string) (name string) {
 		return
 	}
 	if sqlErr != nil {
-		log.Println(sqlErr)
+		log.Fatal(sqlErr)
 	}
 	return name
 }
@@ -65,7 +65,7 @@ func GetMemberEmail(id string) (email string) {
 		return
 	}
 	if sqlErr != nil {
-		log.Println(sqlErr)
+		log.Fatal(sqlErr)
 	}
 	return email
 }
@@ -78,7 +78,7 @@ func UpdateMemberName(id string, name string) bool {
 		return false
 	}
 	if sqlErr != nil {
-		log.Println(sqlErr)
+		log.Fatal(sqlErr)
 	}
 	return true
 }
@@ -90,7 +90,7 @@ func UpdateMemberEmail(id string, email string) bool {
 		return false
 	}
 	if sqlErr != nil {
-		log.Println(sqlErr)
+		log.Fatal(sqlErr)
 	}
 	return true
 }

@@ -1,9 +1,9 @@
 package authentication
 
 import (
-	"fmt"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest/members"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -30,9 +30,9 @@ func TestLoginBadCredentials(t *testing.T) {
 		t.Fail()
 	}
 
-	fmt.Println(resp.StatusCode)
-	fmt.Println(resp.Header.Get("Content-Type"))
-	fmt.Println(string(body))
+	log.Info(resp.StatusCode)
+	log.Info(resp.Header.Get("Content-Type"))
+	log.Info(string(body))
 }
 
 // Test the Login command with a valid set of credentials
@@ -56,7 +56,7 @@ func TestLoginGoodCredentials(t *testing.T) {
 	Login(w, req)
 
 	resp := w.Result()
-	fmt.Println(resp.StatusCode)
+	log.Info(resp.StatusCode)
 
 	if resp.StatusCode != 200 {
 		t.Fail()

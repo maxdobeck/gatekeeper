@@ -1,7 +1,7 @@
 package models
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 )
@@ -25,10 +25,10 @@ func CreateShift(s *Shift) error {
 	_, err := Db.Query("INSERT INTO shifts(title, start_time, end_time, stop_date, min_enrollees, schedule_id, sun, mon, tue, wed, thu, fri, sat) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
 		s.Title, s.Start, s.End, s.Stop, min, s.Schedule, d[0], d[1], d[2], d[3], d[4], d[5], d[6])
 	if err != nil {
-		log.Println("Error creating shift with schedule: ", err, s)
+		log.Info("Error creating shift with schedule: ", err, s)
 		return err
 	}
-	log.Println("Shift Created: ", s)
+	log.Info("Shift Created: ", s)
 	return err
 }
 
@@ -36,7 +36,7 @@ func CreateShift(s *Shift) error {
 func GetShifts(scheduleID string) ([]ShiftPayload, error) {
 	rows, err := Db.Query("SELECT * FROM shifts WHERE schedule_id = $1;", scheduleID)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -46,12 +46,12 @@ func GetShifts(scheduleID string) ([]ShiftPayload, error) {
 		var sun, mon, tue, wed, thu, fri, sat bool
 		err := rows.Scan(&ID, &Schedule, &Title, &MinEnrollees, &StartTime, &EndTime, &StopDate, &sun, &mon, &tue, &wed, &thu, &fri, &sat, &created)
 		if err != nil {
-			log.Println(err)
+			log.Info(err)
 			return nil, err
 		}
 		s = append(s, ShiftPayload{ID, Title, StartTime, EndTime, StopDate, MinEnrollees, Schedule, created, sun, mon, tue, wed, thu, fri, sat})
 	}
-	log.Println("Array of all shifts owned by this schedule: ", scheduleID, s)
+	log.Info("Array of all shifts owned by this schedule: ", scheduleID, s)
 	return s, err
 }
 

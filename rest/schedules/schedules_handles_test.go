@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest/authentication"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -30,7 +31,7 @@ func TestCreateNewSchedule(t *testing.T) {
 	}
 	b, jsonErr := json.Marshal(s)
 	if jsonErr != nil {
-		fmt.Println(jsonErr)
+		log.Info(jsonErr)
 		t.Fail()
 	}
 
@@ -46,7 +47,7 @@ func TestCreateNewSchedule(t *testing.T) {
 	rbody := strings.NewReader(string(b))
 	req, rErr := http.NewRequest("POST", "/schedules", rbody)
 	if rErr != nil {
-		fmt.Println("Problem creating new request: ", rErr)
+		log.Info("Problem creating new request: ", rErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -58,8 +59,8 @@ func TestCreateNewSchedule(t *testing.T) {
 	var expectedMessage [1]string
 	expectedMessage[0] = fmt.Sprintf("Schedule created: %s", s.Title)
 	if res.Message != expectedMessage[0] {
-		fmt.Println("Response Status: ", res.Status)
-		fmt.Printf("The Schedule '%s' was not created!\n", s.Title)
+		log.Info("Response Status: ", res.Status)
+		log.Warnf("The Schedule '%s' was not created!\n", s.Title)
 		t.Fail()
 	}
 	cleanupDb()
@@ -90,7 +91,7 @@ func TestUpdateScheduleTitle(t *testing.T) {
 	body := strings.NewReader(`{"newtitle": "New Schedule Title"}`)
 	req, rErr := http.NewRequest("PATCH", "/schedules/"+scheduleID+"/title", body)
 	if rErr != nil {
-		fmt.Println("Problem creating new request: ", rErr)
+		log.Info("Problem creating new request: ", rErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -139,7 +140,7 @@ func TestDeleteSchedule(t *testing.T) {
 	// Build the request to test
 	req, rErr := http.NewRequest("DELETE", "/schedules/"+scheduleID, nil)
 	if rErr != nil {
-		fmt.Println("Problem creating new request: ", rErr)
+		log.Info("Problem creating new request: ", rErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -176,7 +177,7 @@ func TestFindSchedulesByOwner(t *testing.T) {
 	memberID := models.GetMemberID(m.Email)
 	req, rErr := http.NewRequest("GET", "/schedules/owner/"+memberID, nil)
 	if rErr != nil {
-		fmt.Println("Problem creating new request: ", rErr)
+		log.Info("Problem creating new request: ", rErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -220,7 +221,7 @@ func TestFindScheduleByID(t *testing.T) {
 	authentication.Login(wLogin, loginReq)
 	req, rErr := http.NewRequest("GET", "/schedules/"+targetID, nil)
 	if rErr != nil {
-		fmt.Println("Problem creating new request: ", rErr)
+		log.Info("Problem creating new request: ", rErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -261,7 +262,7 @@ func TestGetNonexistentScheduleByID(t *testing.T) {
 	authentication.Login(wLogin, loginReq)
 	req, rErr := http.NewRequest("GET", "/schedules/owners/"+models.GetMemberID(m.Email), nil)
 	if rErr != nil {
-		fmt.Println("Problem creating new request: ", rErr)
+		log.Info("Problem creating new request: ", rErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -297,7 +298,7 @@ func populateDb() models.NewMember {
 		Password2: "superduper",
 	}
 	if models.CreateMember(&m) != nil {
-		fmt.Println("Member may already be there")
+		log.Info("Member may already be there")
 	}
 
 	l := make([]*models.Schedule, 4)
@@ -309,7 +310,7 @@ func populateDb() models.NewMember {
 	for i := range l {
 		err := models.CreateSchedule(l[i])
 		if err != nil {
-			fmt.Println("Schedule may already exist and you should be able to ignore any errors about duplicate keys.")
+			log.Info("Schedule may already exist and you should be able to ignore any errors about duplicate keys.")
 		}
 	}
 	return m
@@ -319,6 +320,6 @@ func populateDb() models.NewMember {
 func cleanupDb() {
 	_, err := models.Db.Query("DELETE FROM members WHERE email LIKE 'frank@paddys.com'")
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 	}
 }

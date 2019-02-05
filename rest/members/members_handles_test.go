@@ -2,11 +2,11 @@ package members
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq" // github.com/lib/pq
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest/authentication"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -31,7 +31,7 @@ func TestSignupMemberDuplicateEmail(t *testing.T) {
 	_, delErr := models.Db.Query("DELETE FROM members WHERE email like 'testValidCreds@gmail.com'")
 
 	if delErr != nil {
-		fmt.Println(delErr)
+		log.Fatal(delErr)
 	}
 
 	// Signup a user
@@ -43,7 +43,7 @@ func TestSignupMemberDuplicateEmail(t *testing.T) {
 	wSignup := httptest.NewRecorder()
 	SignupMember(wSignup, signupReq)
 
-	fmt.Println("Now try and sign up user with same email")
+	log.Info("Now try and sign up user with same email")
 	dupBody := strings.NewReader(`{"email": "testValidCreds@gmail.com", "email2":"testValidCreds@gmail.com", "password": "supersecret", "password2":"supersecret", "name":"Valid User Signup"}`)
 	dupReq, dupSignupErr := http.NewRequest("POST", "/members", dupBody)
 	if dupSignupErr != nil {
@@ -68,7 +68,7 @@ func TestChangeMemberEmail(t *testing.T) {
 	// Replace this with some sort of DELETE_USER call at some point.  So a cascading del can be performed
 	_, delErr := models.Db.Query("DELETE FROM members WHERE email like 'someEmail@gmail.com'")
 	if delErr != nil {
-		fmt.Println(delErr)
+		log.Fatal(delErr)
 
 	}
 	// Build the request body for the Signup
@@ -83,7 +83,7 @@ func TestChangeMemberEmail(t *testing.T) {
 	var id string
 	findErr := models.Db.QueryRow("SELECT id FROM members WHERE email like 'someEmail@gmail.com'").Scan(&id)
 	if findErr != nil {
-		fmt.Println(findErr)
+		log.Fatal(findErr)
 	}
 
 	// Login to start a session
@@ -121,7 +121,7 @@ func TestChangeMemberName(t *testing.T) {
 	// Replace this with some sort of DELETE_USER call at some point.  So a cascading del can be performed
 	_, delErr := models.Db.Query("DELETE FROM members WHERE email like 'someEmail@gmail.com'")
 	if delErr != nil {
-		fmt.Println(delErr)
+		log.Fatal(delErr)
 
 	}
 
@@ -137,7 +137,7 @@ func TestChangeMemberName(t *testing.T) {
 	var id string
 	findErr := models.Db.QueryRow("SELECT id FROM members WHERE email like 'someEmail@gmail.com'").Scan(&id)
 	if findErr != nil {
-		fmt.Println(findErr)
+		log.Fatal(findErr)
 	}
 
 	// Login to start a session

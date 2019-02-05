@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest/sessions"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -33,7 +33,7 @@ var (
 
 func check(err error) {
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 	}
 }
 
