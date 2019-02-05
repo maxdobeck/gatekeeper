@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest/sessions"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -31,8 +31,8 @@ func SignupMember(w http.ResponseWriter, r *http.Request) {
 	var signupErrs []string
 	err := json.NewDecoder(r.Body).Decode(&m)
 	if err != nil {
-		log.Println("Error decoding new member >>", err)
-		log.Println("Bad New Member data provided: ", r.Body)
+		log.Info("Error decoding new member >>", err)
+		log.Info("Bad New Member data provided: ", r.Body)
 		signupErrs = append(signupErrs, "Error processing new member data.")
 	}
 
@@ -67,16 +67,16 @@ func SignupMember(w http.ResponseWriter, r *http.Request) {
 		}
 		models.CreateMember(&m)
 		json.NewEncoder(w).Encode(msg)
-		log.Println("User Created", m.Email, m.Name)
+		log.Info("User Created", m.Email, m.Name)
 	} else {
-		log.Println("Error creating member.")
+		log.Info("Error creating member.")
 		msg := memberOutput{
 			Status: "Member Not Created",
 			Errors: signupErrs,
 		}
 		json.NewEncoder(w).Encode(msg)
 	}
-	log.Println("User data supplied:", m)
+	log.Info("User data supplied:", m)
 }
 
 // UpdateMemberEmail allows the user to update member information and returns an error or the newly made member name
@@ -94,7 +94,7 @@ func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
 	// Use mux to get the Variables from the URL
 	vars := mux.Vars(r)
 	if vars["id"] == "" {
-		log.Println("Unexpected URL:", r.URL)
+		log.Info("Unexpected URL:", r.URL)
 		msg.Status = "Error"
 		msg.Message = append(msg.Message, "Path is unexpected.")
 		json.NewEncoder(w).Encode(msg)
@@ -104,7 +104,7 @@ func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
 	var memberUpdate member
 	err := json.NewDecoder(r.Body).Decode(&memberUpdate)
 	if err != nil {
-		log.Println("Error decoding body >>", err)
+		log.Info("Error decoding body >>", err)
 	}
 	// Check for bad email length
 	/* if len(memberUpdate.NewEmail1) < 5 || len(memberUpdate.NewEmail2) < 5 {
@@ -115,7 +115,7 @@ func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(msg)
 	} */
-	log.Println("New Email: ", memberUpdate.NewEmail1)
+	log.Info("New Email: ", memberUpdate.NewEmail1)
 	if len(memberUpdate.NewEmail1) >= 5 || len(memberUpdate.NewEmail2) >= 5 {
 		if memberUpdate.NewEmail1 != memberUpdate.NewEmail2 {
 			msg := resDetails{
@@ -132,9 +132,9 @@ func UpdateMemberEmail(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	// Per mux router docs
-	// log.Println("Path Variables: ", vars)
-	// log.Println("Member's ID: ", vars["id"])
-	// log.Println(msg)
+	// log.Info("Path Variables: ", vars)
+	// log.Info("Member's ID: ", vars["id"])
+	// log.Info(msg)
 }
 
 // UpdateMemberName will update the existing member name for authorized sessions
@@ -160,7 +160,7 @@ func UpdateMemberName(w http.ResponseWriter, r *http.Request) {
 	var memberUpdate member
 	err := json.NewDecoder(r.Body).Decode(&memberUpdate)
 	if err != nil {
-		log.Println("Error decoding body >>", err)
+		log.Info("Error decoding body >>", err)
 	}
 	// Check for bad name length
 	/*if len(memberUpdate.NewName) < 1 {
@@ -171,7 +171,7 @@ func UpdateMemberName(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(msg)
 	} */
-	log.Println("New Name: ", memberUpdate.NewName)
+	log.Info("New Name: ", memberUpdate.NewName)
 	if len(memberUpdate.NewName) >= 1 {
 		if models.UpdateMemberName(vars["id"], memberUpdate.NewName) == true {
 			msg.Message = append(msg.Message, memberUpdate.NewName)
@@ -180,7 +180,7 @@ func UpdateMemberName(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Println("Path Variables: ", vars)
-	log.Println("Member's ID: ", vars["id"])
-	log.Println(msg)
+	log.Info("Path Variables: ", vars)
+	log.Info("Member's ID: ", vars["id"])
+	log.Info(msg)
 }

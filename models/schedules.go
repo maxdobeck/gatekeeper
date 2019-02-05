@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 // Schedule contains the core values
@@ -14,10 +14,10 @@ type Schedule struct {
 func CreateSchedule(s *Schedule) error {
 	_, err := Db.Query("INSERT INTO schedules(title, owner_id) VALUES ($1,$2)", s.Title, s.OwnerID)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return err
 	}
-	log.Println("Schedule Created: ", s)
+	log.Info("Schedule Created: ", s)
 	return err
 }
 
@@ -25,7 +25,7 @@ func CreateSchedule(s *Schedule) error {
 func GetSchedules(memberID string) ([]Schedule, error) {
 	rows, err := Db.Query("SELECT id, title, owner_id FROM schedules WHERE owner_id = $1;", memberID)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -34,12 +34,12 @@ func GetSchedules(memberID string) ([]Schedule, error) {
 		var id, title, ownerID string
 		err := rows.Scan(&id, &title, &ownerID)
 		if err != nil {
-			log.Println(err)
+			log.Info(err)
 			return nil, err
 		}
 		s = append(s, Schedule{id, title, ownerID})
 	}
-	log.Println("Array of all schedules owned by: ", memberID, s)
+	log.Info("Array of all schedules owned by: ", memberID, s)
 	return s, err
 }
 
@@ -48,11 +48,11 @@ func GetScheduleByID(scheduleID string) (Schedule, error) {
 	var s Schedule
 	row, err := Db.Query("SELECT id, title, owner_id FROM schedules WHERE id = $1;", scheduleID)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return s, err
 	}
 	if err == sql.ErrNoRows {
-		log.Println("No record found for: ", scheduleID)
+		log.Info("No record found for: ", scheduleID)
 		return s, err
 	}
 	defer row.Close()
@@ -60,14 +60,14 @@ func GetScheduleByID(scheduleID string) (Schedule, error) {
 		var id, title, ownerID string
 		err := row.Scan(&id, &title, &ownerID)
 		if err != nil || id != scheduleID {
-			log.Println(err)
+			log.Info(err)
 			return s, err
 		}
 		s.Title = title
 		s.OwnerID = ownerID
 		s.ID = id
 	}
-	log.Println("Schedule found: ", s)
+	log.Info("Schedule found: ", s)
 	return s, err
 }
 
@@ -78,7 +78,7 @@ func UpdateScheduleTitle(scheduleID string, newTitle string) error {
 		return err
 	}
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return err
 	}
 	return nil
@@ -88,10 +88,10 @@ func UpdateScheduleTitle(scheduleID string, newTitle string) error {
 func DeleteSchedule(scheduleID string) error {
 	_, err := Db.Query("DELETE FROM schedules WHERE id = $1;", scheduleID)
 	if err != nil {
-		log.Println("Schedule could not be deleted by id: ", scheduleID)
+		log.Info("Schedule could not be deleted by id: ", scheduleID)
 		return err
 	}
-	log.Println("Schedule deleted: ", scheduleID)
+	log.Info("Schedule deleted: ", scheduleID)
 	return nil
 }
 

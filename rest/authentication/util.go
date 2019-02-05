@@ -3,8 +3,8 @@ package authentication
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	_ "github.com/lib/pq" // github.com/lib/pq
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
@@ -19,7 +19,7 @@ func getCurPassword(email string) (password string, userPresent bool) {
 	connStr := os.Getenv("PGURL")
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 	}
 	sqlErr := db.QueryRow("SELECT password FROM members WHERE email = $1", email).Scan(&password)
 	if sqlErr == sql.ErrNoRows {
@@ -28,7 +28,7 @@ func getCurPassword(email string) (password string, userPresent bool) {
 		return
 	}
 	if sqlErr != nil {
-		fmt.Println(sqlErr)
+		log.Info(sqlErr)
 	}
 	userPresent = true
 	return
@@ -38,13 +38,13 @@ func passwordsMatch(r *http.Request, c Credentials) bool {
 	// c := DecodeCredentials(r)
 	curPw, userPresent := getCurPassword(c.Email)
 	if userPresent != true {
-		fmt.Println("User is not in the database")
+		log.Info("User is not in the database")
 		return false
 	}
 	loginPw := []byte(c.Password)
 	hashedPw := []byte(curPw)
 	if bcrypt.CompareHashAndPassword(hashedPw, loginPw) != nil {
-		fmt.Println("The passwords do not match")
+		log.Info("The passwords do not match")
 		return false
 	}
 	return true
@@ -54,7 +54,7 @@ func passwordsMatch(r *http.Request, c Credentials) bool {
 func DecodeCredentials(r *http.Request) (c Credentials) {
 	err := json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
-		fmt.Println("Error decoding credentials >>", err)
+		log.Info("Error decoding credentials >>", err)
 	}
 	return
 }

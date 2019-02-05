@@ -2,7 +2,7 @@ package models
 
 import (
 	_ "github.com/lib/pq" // github.com/lib/pq
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"testing"
 )
@@ -11,7 +11,7 @@ func TestCreateMember(t *testing.T) {
 	ConnToDB(os.Getenv("PGURL"))
 
 	_, delErr := Db.Query("DELETE FROM members WHERE email like 'testtest@gmail.com'")
-	log.Println(delErr)
+	log.Info(delErr)
 
 	m := NewMember{
 		Name:      "Test Member",
@@ -28,7 +28,7 @@ func TestCreateMember(t *testing.T) {
 	var record string
 	err := Db.QueryRow("SELECT email FROM members WHERE email like 'testtest@gmail.com'").Scan(&record)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		t.Log(err)
 		t.Fail()
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest/sessions"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -50,7 +50,7 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	// var errors []string
 	err := json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
-		log.Println("Problem decoding incoming Schedule", err)
+		log.Info("Problem decoding incoming Schedule", err)
 	}
 	if s.Title == "" {
 		msg := ResDetails{
@@ -63,7 +63,7 @@ func NewSchedule(w http.ResponseWriter, r *http.Request) {
 	}
 	scheduleErr := models.CreateSchedule(&s)
 	if scheduleErr != nil {
-		log.Println("Problem making schedule: ", scheduleErr, s)
+		log.Info("Problem making schedule: ", scheduleErr, s)
 		newScheduleErrors = append(newScheduleErrors, fmt.Sprintf("Error creating schedule %s", scheduleErr))
 		msg := ResDetails{
 			Status:  fmt.Sprintf("Problem creating schedule: %s", s.Title),
@@ -91,15 +91,15 @@ func DeleteScheduleByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	log.Println("Schedule to be deleted: ", vars["id"])
+	log.Info("Schedule to be deleted: ", vars["id"])
 
 	curUser := sessions.CookieMemberID(r)
 	if curUser == "Error" {
-		log.Println("Problem getting member ID from cookie.  Log in and log out.")
+		log.Info("Problem getting member ID from cookie.  Log in and log out.")
 	}
 	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
-		log.Println("Problem finding schedule: ", vars["id"])
+		log.Info("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
 			Status:  "Could not find schedule.",
 			Message: "Schedule does not exist.",
@@ -149,7 +149,7 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	if vars["id"] == "" {
 		var msg ResDetails
-		log.Println("Unexpected URL:", r.URL)
+		log.Info("Unexpected URL:", r.URL)
 		msg.Status = "Error"
 		msg.Message = "Bad id for schedule."
 		msg.Errors = append(msg.Errors, "Path is unexpected.  Resource not found.")
@@ -158,7 +158,7 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	}
 	curUser := sessions.CookieMemberID(r)
 	if curUser == "Error" {
-		log.Println("Problem getting member ID from cookie.  Log in and log out.")
+		log.Info("Problem getting member ID from cookie.  Log in and log out.")
 		msg := ResDetails{
 			Status:  "Expired session or cookie",
 			Message: "Problem with session.",
@@ -170,7 +170,7 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	// (that the cookie session for the logged in user == the schedule owner)
 	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
-		log.Println("Problem finding schedule: ", vars["id"])
+		log.Info("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
 			Status:  "Could not find schedule.",
 			Message: "Schedule does not exist.",
@@ -189,7 +189,7 @@ func UpdateScheduleTitle(w http.ResponseWriter, r *http.Request) {
 	var titleUpdate updateSchedule
 	err := json.NewDecoder(r.Body).Decode(&titleUpdate)
 	if err != nil {
-		log.Println("Error decoding body >>", err)
+		log.Info("Error decoding body >>", err)
 		msg := ResDetails{
 			Status:  "Error.",
 			Message: "Error decoding body.",
@@ -238,7 +238,7 @@ func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	if vars["id"] == "" {
 		var msg ResDetails
-		log.Println("Unexpected URL:", r.URL)
+		log.Info("Unexpected URL:", r.URL)
 		msg.Status = "Error"
 		msg.Message = "Bad id for schedule."
 		msg.Errors = append(msg.Errors, "Path is unexpected.  Resource not found.")
@@ -247,7 +247,7 @@ func FindScheduleByID(w http.ResponseWriter, r *http.Request) {
 	}
 	schedule, sErr := models.GetScheduleByID(vars["id"])
 	if sErr != nil {
-		log.Println("Problem finding schedule: ", vars["id"])
+		log.Info("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
 			Status:  "Could not find schedule.",
 			Message: "Schedule does not exist or could not be found.",
@@ -288,7 +288,7 @@ func FindSchedulesByOwner(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	if vars["id"] == "" {
 		var msg ResDetails
-		log.Println("Unexpected URL:", r.URL)
+		log.Info("Unexpected URL:", r.URL)
 		msg.Status = "Error"
 		msg.Message = "Bad id for member."
 		msg.Errors = append(msg.Errors, "Path is unexpected.  Resource not found.")
@@ -297,7 +297,7 @@ func FindSchedulesByOwner(w http.ResponseWriter, r *http.Request) {
 	}
 	schedules, sErr := models.GetSchedules(vars["id"])
 	if sErr != nil {
-		log.Println("Problem finding schedule: ", vars["id"])
+		log.Info("Problem finding schedule: ", vars["id"])
 		msg := ResDetails{
 			Status:  "Could not find schedule.",
 			Message: "Schedule does not exist or could not be found.",
@@ -307,12 +307,12 @@ func FindSchedulesByOwner(w http.ResponseWriter, r *http.Request) {
 	}
 	msg := Payload{}
 	msg.FoundSchedules = schedules
-	log.Println("Schedules found: ", schedules)
+	log.Info("Schedules found: ", schedules)
 	details := ResDetails{
 		Status:  "OK",
 		Message: "Schedule Found",
 	}
 	msg.ResDetails = details
-	log.Println("Payload from Finding Schedule by Owner: ", msg)
+	log.Info("Payload from Finding Schedule by Owner: ", msg)
 	json.NewEncoder(w).Encode(msg)
 }

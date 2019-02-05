@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/Sirupsen/logrus"
+  packages = ["."]
+  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
+  version = "v1.3.0"
+
+[[projects]]
   name = "github.com/antonlindstrom/pgstore"
   packages = ["."]
   revision = "a407030ba6d0efd9a1aad3d0cfc18a9b13d2f2e7"
@@ -38,6 +44,12 @@
   version = "v1.1.1"
 
 [[projects]]
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/lib/pq"
   packages = [
@@ -59,6 +71,12 @@
   version = "v1.4.0"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "bcd833dfe83d3cebad139e4a29ed79cb2318bf95"
+  version = "v1.2.0"
+
+[[projects]]
   name = "github.com/urfave/negroni"
   packages = ["."]
   revision = "5dbbc83f748fc3ad38585842b0aedab546d0ea1e"
@@ -69,13 +87,23 @@
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
-    "blowfish"
+    "blowfish",
+    "ssh/terminal"
   ]
   revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "41f3e6584952bb034a481797859f6ab34b6803bd"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a6cfb00e5d5eadb8c55dea1bec0494117197d654df3ab2772d79c6dae569b3ac"
+  inputs-digest = "c87c54f56e481058f0b8bfd65d4fda0af9423d54cfffbe6a37c9a675d4d43251"
   solver-name = "gps-cdcl"
   solver-version = 1

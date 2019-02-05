@@ -2,11 +2,11 @@ package shifts
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/maxdobeck/gatekeeper/models"
 	"github.com/maxdobeck/gatekeeper/rest/authentication"
 	"github.com/maxdobeck/gatekeeper/rest/schedules"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -29,10 +29,10 @@ func TestFindAllShifts(t *testing.T) {
 	wLogin := httptest.NewRecorder()
 	authentication.Login(wLogin, loginReq)
 	memberID := models.GetMemberID(m.Email)
-	fmt.Println("Member we'll be using: ", memberID, m.Email)
+	log.Info("Member we'll be using: ", memberID, m.Email)
 	req, rErr := http.NewRequest("GET", "/schedules/owner/"+memberID, nil)
 	if rErr != nil {
-		fmt.Println("Problem creating new request: ", rErr)
+		log.Fatal("Problem creating new request: ", rErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -45,19 +45,19 @@ func TestFindAllShifts(t *testing.T) {
 	router.ServeHTTP(scheduleRecorder, req)
 
 	schedRes := schedules.Payload{}
-	fmt.Println("RAW Schedule Recorder Body", scheduleRecorder.Body.String())
+	log.Info("RAW Schedule Recorder Body", scheduleRecorder.Body.String())
 	json.Unmarshal([]byte(scheduleRecorder.Body.String()), &schedRes)
-	fmt.Println("SCHEDULE RESP JSON Payload: ", schedRes)
+	log.Info("SCHEDULE RESP JSON Payload: ", schedRes)
 	if schedRes.ResDetails.Status != "OK" {
 		t.Errorf("Actual /schedules/owner/{id} response: %s to this request %s", scheduleRecorder.Body.String(), req.URL)
 		t.Error("Not all schedules were found.", schedRes)
 		t.Fail()
 	}
-	fmt.Println("Schedule ID we'll be using: ", schedRes.FoundSchedules[0].ID)
+	log.Info("Schedule ID we'll be using: ", schedRes.FoundSchedules[0].ID)
 
 	shiftReq, shiftReqErr := http.NewRequest("GET", "/schedules/"+schedRes.FoundSchedules[0].ID+"/shifts", nil)
 	if shiftReqErr != nil {
-		fmt.Println("Problem creating new request: ", shiftReqErr)
+		log.Fatal("Problem creating new request: ", shiftReqErr)
 		t.Fail()
 	}
 	// Add the cookie from the newly created session to the request
@@ -69,7 +69,7 @@ func TestFindAllShifts(t *testing.T) {
 	shiftRouter.ServeHTTP(shiftRecorder, shiftReq)
 
 	// Actual test: We're looking for 1 shift
-	fmt.Println("schedules/id/shifts output: ", shiftRecorder.Body.String())
+	log.Info("schedules/id/shifts output: ", shiftRecorder.Body.String())
 	shiftPayload := Payload{}
 	json.Unmarshal([]byte(shiftRecorder.Body.String()), &shiftPayload)
 	if len(shiftPayload.FoundShifts) != 1 {
@@ -88,7 +88,7 @@ func populateDb() models.NewMember {
 		Password2: "superduper",
 	}
 	if models.CreateMember(&m) != nil {
-		fmt.Println("Member may already be there")
+		log.Fatal("Member may already be there")
 	}
 
 	l := make([]*models.Schedule, 1)
@@ -100,13 +100,13 @@ func populateDb() models.NewMember {
 	for i := range l {
 		err := models.CreateSchedule(l[i])
 		if err != nil {
-			fmt.Println("Schedule may already exist and you should be able to ignore any errors about duplicate keys.")
+			log.Fatal("Schedule may already exist and you should be able to ignore any errors about duplicate keys.")
 		}
 	}
 
 	franksSchedules, getErr := models.GetSchedules(models.GetMemberID(m.Email))
 	if getErr != nil {
-		fmt.Println("problem getting all of Franks Schedules!", getErr)
+		log.Info("problem getting all of Franks Schedules!", getErr)
 	}
 
 	target := models.Shift{
@@ -120,11 +120,11 @@ func populateDb() models.NewMember {
 	}
 	shiftErr := models.CreateShift(&target)
 	if shiftErr != nil {
-		fmt.Println("Target Shift may already exist but this could be a real error!", shiftErr)
+		log.Fatal("Target Shift may already exist but this could be a real error!", shiftErr)
 	}
 	shifts, _ := models.GetShifts(franksSchedules[0].ID)
 
-	fmt.Println("All of Franks first schedule shifts: ", shifts)
+	log.Info("All of Franks first schedule shifts: ", shifts)
 
 	return m
 }
@@ -133,6 +133,6 @@ func populateDb() models.NewMember {
 func cleanupDb() {
 	_, err := models.Db.Query("DELETE FROM members WHERE email LIKE 'frankshift@paddys.com'")
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 }

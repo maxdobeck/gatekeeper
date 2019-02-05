@@ -2,8 +2,7 @@ package members
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -11,18 +10,18 @@ func uniqueEmail(email string) bool {
 	connStr := os.Getenv("PGURL")
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 	existingEmail := ""
 
 	sqlErr := db.QueryRow("SELECT email FROM members WHERE email = $1", email).Scan(&existingEmail)
 
 	if sqlErr == sql.ErrNoRows {
-		log.Println("Email does not exist.")
+		log.Info("Email does not exist.")
 		return true
 	}
 
-	log.Println("Email exists in the store: ", existingEmail)
+	log.Info("Email exists in the store: ", existingEmail)
 	if len(existingEmail) > 0 {
 		return false
 	}
