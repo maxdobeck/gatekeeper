@@ -3,6 +3,7 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
+  build-test:
     docker:
       # specify the version
       - image: circleci/golang:1.11
@@ -74,4 +75,4 @@ workflows:
             - build-test
           filters:
             branches:
-              only: prod 
+              ignore: /*/ 
