@@ -9,7 +9,7 @@ jobs:
         only: /.*/
     docker:
       # specify the version
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.11
         environment:
           PGURL: postgresql://root@localhost/circle_test?sslmode=disable
           GO_ENV: dev
@@ -80,4 +80,4 @@ workflows:
             tags:
               only: /^prod-*/
             branches:
-              ignore: /*/ 
+              ignore: /.*/ 
