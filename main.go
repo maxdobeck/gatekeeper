@@ -20,6 +20,8 @@ import (
 )
 
 func main() {
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.DebugLevel)
 	store, err := pgstore.NewPGStore(os.Getenv("PGURL"), []byte("secret-key"))
 	if err != nil {
 		log.Fatalf(err.Error())
