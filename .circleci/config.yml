@@ -6,7 +6,7 @@ jobs:
   build-test:
     filters:
       tags:
-        only: /.*/
+        only: /*/
     docker:
       # specify the version
       - image: circleci/golang:1.10
