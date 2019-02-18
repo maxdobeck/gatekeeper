@@ -77,4 +77,4 @@ workflows:
             tags:
               only: /^prod-*/
             branches:
-              only: master 
+              ignore: /.*/ 
