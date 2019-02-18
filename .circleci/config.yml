@@ -75,8 +75,6 @@ workflows:
             - build-test
           filters:
             tags:
-              only:
-                - /^prod-*/
+              only: /^prod-*/
             branches:
-              ignore: 
-                - /.*/ 
+              ignore: /*/ 
