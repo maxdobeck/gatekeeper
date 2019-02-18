@@ -4,9 +4,6 @@
 version: 2
 jobs:
   build-test:
-    filters:
-      tags:
-        ignore: /^deploy*/
     docker:
       # specify the version
       - image: circleci/golang:1.11
@@ -77,5 +74,5 @@ workflows:
           requires:
             - build-test
           filters:
-            tags:
-              only : /^deploy*/
+            branches:
+              only : prod
